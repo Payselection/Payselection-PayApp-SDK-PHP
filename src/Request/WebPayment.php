@@ -12,6 +12,7 @@ class WebPayment extends BaseRequest
     public string  $description;
     public array   $extraData;
     public array   $customerInfo;
+    public array   $request;
     private string $paymentType;
 
     /**
@@ -23,13 +24,17 @@ class WebPayment extends BaseRequest
         $this->paymentType = $paymentType;
     }
 
+    /**
+     * @return array
+     */
     public function makeRequest(): array
     {
         $cf = [
             'Language' => 'RU',
         ];
         $customerInfo = array_merge($cf, $this->customerInfo);
-        return [
+
+        $req = [
             'MetaData' => [
                 'PaymentType' => $this->paymentType,
             ],
@@ -39,9 +44,14 @@ class WebPayment extends BaseRequest
                 'Description' => $this->description,
                 'RebillFlag' => false,
                 'OrderId' => $this->orderId,
-                'ExtraData' => $this->extraData,
             ],
             'CustomerInfo' => $customerInfo,
         ];
+
+        if ($this->extraData) {
+            $req['PaymentRequest'] += ['ExtraData' => $this->extraData];
+        }
+
+        return $req;
     }
 }

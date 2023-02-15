@@ -2,14 +2,11 @@
 
 namespace PaySelection;
 
+use GuzzleHttp\Exception\GuzzleException;
 use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Enum\PaymentType;
 use PaySelection\Request\WebPayment;
-use PaySelection\Request\NotificationsGet;
-use PaySelection\Request\NotificationsUpdate;
-use PaySelection\Request\PaymentsGet;
 use PaySelection\Response\PSResponse;
-use PaySelection\Response\NotificationResponse;
 use GuzzleHttp\Client;
 use PaySelection\Response\WebPayResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -23,7 +20,7 @@ class Library
     private   array   $configParams;
 
     /**
-     *
+     * @param string|null $filePath
      */
     public function __construct(string $filePath = null)
     {
@@ -40,9 +37,15 @@ class Library
     }
 
     /**
-     *
+     * @param $amount
+     * @param string $currency
+     * @param string $orderId
+     * @param string $description
+     * @param array|null $extraData
+     * @param array|null $customerInfo
+     * @return WebPayResponse
      */
-    public function paymentsCardsCharge(
+    public function webPayCreate(
         $amount,
         string $currency,
         string $orderId,
@@ -65,18 +68,37 @@ class Library
     }
 
     /**
-     *
+     * @param array $request
+     * @return WebPayResponse
      */
-    protected function request(string $method, array $postData = [], ?PSResponse $cloudResponse = null): PSResponse
+    public function webPayCreateExtended(
+        array $request
+    ): WebPayResponse
     {
-        $response = $this->sendRequest($method, $postData);
+        $method = PSMethodsEnum::PAYMENTS_WEBPAY;
 
-        $cloudResponse = $cloudResponse ?? new PSResponse();
-        return $cloudResponse->fillByResponse($response);
+        $webPaymentData = new WebPayment(PaymentType::PAY);
+        $webPaymentData->reqest = $request;
+
+        return $this->requestWebPay($method, $webPaymentData->makeRequest());
     }
 
     /**
      *
+     */
+    protected function request(string $method, array $postData = []): PSResponse
+    {
+        $response = $this->sendRequest($method, $postData);
+
+        $psResponse = new PSResponse();
+        return $psResponse->fillByResponse($response);
+    }
+
+
+    /**
+     * @param string $method
+     * @param array $postData
+     * @return WebPayResponse
      */
     protected function requestWebPay(string $method, array $postData = []): WebPayResponse
     {
@@ -87,7 +109,10 @@ class Library
     }
 
     /**
-     *
+     * @param string $method
+     * @param array $postData
+     * @return ResponseInterface
+     * @throws GuzzleException
      */
     public function sendRequest(string $method, array $postData = []): ResponseInterface
     {
@@ -123,14 +148,21 @@ class Library
         );
     }
 
+
     /**
-     *
+     * @param string $body
+     * @param string $secretKey
+     * @return string
      */
     private function getSignature(string $body, string $secretKey): string
     {
         return hash_hmac('sha256', $body, $secretKey);
     }
 
+    /**
+     * @param $filePath
+     * @return $this
+     */
     public function loadConfiguration($filePath = null): Library
     {
         if ($filePath) {
