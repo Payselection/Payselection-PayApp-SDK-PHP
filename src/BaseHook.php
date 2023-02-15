@@ -21,18 +21,19 @@ class BaseHook
      *
      * @throws BadTypeException
      */
-    public function __construct(array $request, string $filePath = null)
+    public function __construct(string $filePath = null)
     {
         $this->loadConfiguration($filePath);
         $this->siteId    = $this->configParams['site_id'];
         $this->secretKey = $this->configParams['secret_key'];
 
+        $request = file_get_contents('php://input');
         $headers = getallheaders();
         if (
             empty($request) ||
-            empty($headers['X-SITE-ID']) ||
-            $this->siteId != $headers['X-SITE-ID'] ||
-            empty($headers['X-WEBHOOK-SIGNATURE'])
+            empty($headers['X-Site-Id']) ||
+            $this->siteId != $headers['X-Site-Id'] ||
+            empty($headers['X-Webhook-Signature'])
         )
             throw new BadTypeException('Not found');
 
@@ -42,11 +43,14 @@ class BaseHook
             $this->siteId . PHP_EOL .
             json_encode($request);
 
-        if ($headers['X-WEBHOOK-SIGNATURE'] !== self::getSignature($signBody, $this->secretKey))
+        if ($headers['X-Webhook-Signature'] !== self::getSignature($signBody, $this->secretKey))
             throw new BadTypeException('Signature error');
 
         $request = json_decode($request, true);
-        //$this->request = $request;
+        if (!$request)
+            throw new BadTypeException('Can\'t decode JSON');
+
+        $this->request = $request;
         $this->fill();
     }
 
