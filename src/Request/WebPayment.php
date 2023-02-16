@@ -54,4 +54,18 @@ class WebPayment extends BaseRequest
 
         return $req;
     }
+
+    /**
+     * @return array
+     */
+    public function makeRequestExtended(): array
+    {
+        $md = [
+            'MetaData' => [
+                'PaymentType' => $this->paymentType,
+            ]
+        ];
+
+        return array_merge($md, $this->request);
+    }
 }

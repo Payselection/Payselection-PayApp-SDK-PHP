@@ -37,6 +37,7 @@ class Library
     }
 
     /**
+     * https://api.payselection.com/#tag/webpay
      * @param $amount
      * @param string $currency
      * @param string $orderId
@@ -67,24 +68,27 @@ class Library
         return $this->requestWebPay($method, $webPaymentData->makeRequest());
     }
 
+
     /**
      * @param array $request
      * @return WebPayResponse
+     * @throws GuzzleException
      */
-    public function webPayCreateExtended(
-        array $request
-    ): WebPayResponse
+    public function webPayCreateExtended(array $request): WebPayResponse
     {
         $method = PSMethodsEnum::PAYMENTS_WEBPAY;
 
         $webPaymentData = new WebPayment(PaymentType::PAY);
-        $webPaymentData->reqest = $request;
+        $webPaymentData->request = $request;
 
-        return $this->requestWebPay($method, $webPaymentData->makeRequest());
+        return $this->requestWebPay($method, $webPaymentData->makeRequestExtended());
     }
 
     /**
-     *
+     * @param string $method
+     * @param array $postData
+     * @return PSResponse
+     * @throws GuzzleException
      */
     protected function request(string $method, array $postData = []): PSResponse
     {
@@ -99,6 +103,7 @@ class Library
      * @param string $method
      * @param array $postData
      * @return WebPayResponse
+     * @throws GuzzleException
      */
     protected function requestWebPay(string $method, array $postData = []): WebPayResponse
     {

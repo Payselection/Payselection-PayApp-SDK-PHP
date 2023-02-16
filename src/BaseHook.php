@@ -59,6 +59,11 @@ class BaseHook
         return $this->request;
     }
 
+    /**
+     * @param string $body
+     * @param string $secretKey
+     * @return string
+     */
     protected static function getSignature(string $body, string $secretKey): string
     {
         if (empty($body)) {
