@@ -1,11 +1,11 @@
 {
-    "name": "payselection-php-client",
+    "name": "payselection/payselection-php-client",
     "description": "Payselection api client",
     "license": "MIT",
     "authors": [
         {
-            "name": "PS",
-            "email": ""
+            "name": "Vadim Beletsky",
+            "email": "vadim.beletsky@solbeg.com"
         }
     ],
     "keywords": [
