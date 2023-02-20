@@ -25,15 +25,19 @@ class Library
     public function __construct(string $filePath = null)
     {
         $this->loadConfiguration($filePath);
-        $this->url       = $this->configParams['webpay_url'];
-        $this->siteId    = $this->configParams['site_id'];
-        $this->secretKey = $this->configParams['secret_key'];;
+        $this->createClient();
+    }
 
-        $this->client = new Client([
-            'headers'  => ['X-Site-ID' => $this->siteId],
-            'base_uri' => $this->url,
-            'expect'   => false
-        ]);
+    /**
+     * @param array $config
+     * @return $this
+     */
+    public function setConfiguration(array $config): Library {
+        $paramsArray = array_merge($this->configParams, $config);
+        $this->configParams = $paramsArray;
+        $this->createClient();
+
+        return $this;
     }
 
     /**
@@ -45,6 +49,7 @@ class Library
      * @param array|null $extraData
      * @param array|null $customerInfo
      * @return WebPayResponse
+     * @throws GuzzleException
      */
     public function webPayCreate(
         $amount,
@@ -67,7 +72,6 @@ class Library
 
         return $this->requestWebPay($method, $webPaymentData->makeRequest());
     }
-
 
     /**
      * @param array $request
@@ -97,7 +101,6 @@ class Library
         $psResponse = new PSResponse();
         return $psResponse->fillByResponse($response);
     }
-
 
     /**
      * @param string $method
@@ -153,7 +156,6 @@ class Library
         );
     }
 
-
     /**
      * @param string $body
      * @param string $secretKey
@@ -166,9 +168,9 @@ class Library
 
     /**
      * @param $filePath
-     * @return $this
+     * @return void
      */
-    public function loadConfiguration($filePath = null): Library
+    private function loadConfiguration($filePath = null): void
     {
         if ($filePath) {
             $data = file_get_contents($filePath);
@@ -178,7 +180,21 @@ class Library
 
         $paramsArray = json_decode($data, true);
         $this->configParams = $paramsArray;
+    }
 
-        return $this;
+    /**
+     * @return void
+     */
+    private function createClient(): void
+    {
+        $this->url       = $this->configParams['webpay_url'];
+        $this->siteId    = $this->configParams['site_id'];
+        $this->secretKey = $this->configParams['secret_key'];
+
+        $this->client = new Client([
+            'headers'  => ['X-Site-ID' => $this->siteId],
+            'base_uri' => $this->url,
+            'expect'   => false
+        ]);
     }
 }
