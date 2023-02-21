@@ -15,7 +15,8 @@ class Library
 {
     protected string  $siteId;
     protected string  $secretKey;
-    protected string  $url;
+    protected string  $webpay_url;
+    protected string  $api_url;
     protected Client  $client;
     private   array   $configParams;
 
@@ -25,7 +26,6 @@ class Library
     public function __construct(string $filePath = null)
     {
         $this->loadConfiguration($filePath);
-        $this->createClient();
     }
 
     /**
@@ -35,7 +35,6 @@ class Library
     public function setConfiguration(array $config): Library {
         $paramsArray = array_merge($this->configParams, $config);
         $this->configParams = $paramsArray;
-        $this->createClient();
 
         return $this;
     }
@@ -61,6 +60,7 @@ class Library
     ): WebPayResponse
     {
         $method = PSMethodsEnum::PAYMENTS_WEBPAY;
+        $this->createClient($method);
 
         $webPaymentData = new WebPayment(PaymentType::PAY);
         $webPaymentData->amount       = $amount;
@@ -81,6 +81,7 @@ class Library
     public function webPayCreateExtended(array $request): WebPayResponse
     {
         $method = PSMethodsEnum::PAYMENTS_WEBPAY;
+        $this->createClient($method);
 
         $webPaymentData = new WebPayment(PaymentType::PAY);
         $webPaymentData->request = $request;
@@ -139,7 +140,7 @@ class Library
         $options = ['json' => $postData];
         $options['headers'] = $headers;
 
-        return $this->client->post('/' . $method, $options);
+        return $this->client->post($method, $options);
     }
 
     /**
@@ -183,17 +184,25 @@ class Library
     }
 
     /**
+     * @param string $method
      * @return void
      */
-    private function createClient(): void
+    private function createClient(string $method): void
     {
-        $this->url       = $this->configParams['webpay_url'];
-        $this->siteId    = $this->configParams['site_id'];
-        $this->secretKey = $this->configParams['secret_key'];
+        $this->webpay_url = $this->configParams['webpay_url'];
+        $this->api_url    = $this->configParams['api_url'];
+        $this->siteId     = $this->configParams['site_id'];
+        $this->secretKey  = $this->configParams['secret_key'];
+
+        if ($method === PSMethodsEnum::PAYMENTS_WEBPAY) {
+            $url = $this->webpay_url;
+        } else {
+            $url = $this->api_url;
+        }
 
         $this->client = new Client([
             'headers'  => ['X-Site-ID' => $this->siteId],
-            'base_uri' => $this->url,
+            'base_uri' => $url,
             'expect'   => false
         ]);
     }
