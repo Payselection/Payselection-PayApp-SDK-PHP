@@ -15,7 +15,8 @@ class Library
 {
     protected string  $siteId;
     protected string  $secretKey;
-    protected string  $url;
+    protected string  $webpay_url;
+    protected string  $api_url;
     protected Client  $client;
     private   array   $configParams;
 
@@ -25,15 +26,17 @@ class Library
     public function __construct(string $filePath = null)
     {
         $this->loadConfiguration($filePath);
-        $this->url       = $this->configParams['webpay_url'];
-        $this->siteId    = $this->configParams['site_id'];
-        $this->secretKey = $this->configParams['secret_key'];;
+    }
 
-        $this->client = new Client([
-            'headers'  => ['X-Site-ID' => $this->siteId],
-            'base_uri' => $this->url,
-            'expect'   => false
-        ]);
+    /**
+     * @param array $config
+     * @return $this
+     */
+    public function setConfiguration(array $config): Library {
+        $paramsArray = array_merge($this->configParams, $config);
+        $this->configParams = $paramsArray;
+
+        return $this;
     }
 
     /**
@@ -45,6 +48,7 @@ class Library
      * @param array|null $extraData
      * @param array|null $customerInfo
      * @return WebPayResponse
+     * @throws GuzzleException
      */
     public function webPayCreate(
         $amount,
@@ -56,6 +60,7 @@ class Library
     ): WebPayResponse
     {
         $method = PSMethodsEnum::PAYMENTS_WEBPAY;
+        $this->createClient($method);
 
         $webPaymentData = new WebPayment(PaymentType::PAY);
         $webPaymentData->amount       = $amount;
@@ -68,7 +73,6 @@ class Library
         return $this->requestWebPay($method, $webPaymentData->makeRequest());
     }
 
-
     /**
      * @param array $request
      * @return WebPayResponse
@@ -77,6 +81,7 @@ class Library
     public function webPayCreateExtended(array $request): WebPayResponse
     {
         $method = PSMethodsEnum::PAYMENTS_WEBPAY;
+        $this->createClient($method);
 
         $webPaymentData = new WebPayment(PaymentType::PAY);
         $webPaymentData->request = $request;
@@ -97,7 +102,6 @@ class Library
         $psResponse = new PSResponse();
         return $psResponse->fillByResponse($response);
     }
-
 
     /**
      * @param string $method
@@ -136,7 +140,7 @@ class Library
         $options = ['json' => $postData];
         $options['headers'] = $headers;
 
-        return $this->client->post('/' . $method, $options);
+        return $this->client->post($method, $options);
     }
 
     /**
@@ -153,7 +157,6 @@ class Library
         );
     }
 
-
     /**
      * @param string $body
      * @param string $secretKey
@@ -166,9 +169,9 @@ class Library
 
     /**
      * @param $filePath
-     * @return $this
+     * @return void
      */
-    public function loadConfiguration($filePath = null): Library
+    private function loadConfiguration($filePath = null): void
     {
         if ($filePath) {
             $data = file_get_contents($filePath);
@@ -178,7 +181,29 @@ class Library
 
         $paramsArray = json_decode($data, true);
         $this->configParams = $paramsArray;
+    }
 
-        return $this;
+    /**
+     * @param string $method
+     * @return void
+     */
+    private function createClient(string $method): void
+    {
+        $this->webpay_url = $this->configParams['webpay_url'];
+        $this->api_url    = $this->configParams['api_url'];
+        $this->siteId     = $this->configParams['site_id'];
+        $this->secretKey  = $this->configParams['secret_key'];
+
+        if ($method === PSMethodsEnum::PAYMENTS_WEBPAY) {
+            $url = $this->webpay_url;
+        } else {
+            $url = $this->api_url;
+        }
+
+        $this->client = new Client([
+            'headers'  => ['X-Site-ID' => $this->siteId],
+            'base_uri' => $url,
+            'expect'   => false
+        ]);
     }
 }

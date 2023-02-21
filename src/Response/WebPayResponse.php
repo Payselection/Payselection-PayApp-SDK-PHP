@@ -15,7 +15,7 @@ class WebPayResponse extends BaseRequest
     public function fillByResponse(ResponseInterface $response): self
     {
         $responseBody = json_decode($response->getBody());
-        $this->redirectUrl = trim($responseBody, '"');
+        $this->redirectUrl = trim($responseBody ?? '', '"');
 
         return $this;
     }
