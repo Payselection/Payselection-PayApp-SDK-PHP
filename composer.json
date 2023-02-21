@@ -14,8 +14,8 @@
     ],
     "require": {
         "php": ">=7.4",
-        "guzzlehttp/guzzle": "^7.5",
-        "myclabs/php-enum": "^1.8"
+        "guzzlehttp/guzzle": "~6.3",
+        "myclabs/php-enum": "1.6"
     },
     "autoload": {
         "psr-4": {
