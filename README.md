@@ -10,7 +10,7 @@
 Установить библиотеку можно с помощью composer:
 
 ```
-composer require payselection-php-sdk
+composer require payselection/payselection-php-sdk
 ```
 
 ## Начало работы
