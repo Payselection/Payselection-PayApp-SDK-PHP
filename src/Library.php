@@ -56,7 +56,8 @@ class Library
         string $orderId,
         string $description,
         ?array $extraData = array(),
-        ?array $customerInfo = array()
+        ?array $customerInfo = array(),
+        ?array $receiptInfo = array()
     ): WebPayResponse
     {
         $method = PSMethodsEnum::PAYMENTS_WEBPAY;
@@ -69,6 +70,7 @@ class Library
         $webPaymentData->description  = $description;
         $webPaymentData->extraData    = $extraData;
         $webPaymentData->customerInfo = $customerInfo;
+        $webPaymentData->receiptInfo  = $receiptInfo;
 
         return $this->requestWebPay($method, $webPaymentData->makeRequest());
     }
