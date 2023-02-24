@@ -12,6 +12,7 @@ class WebPayment extends BaseRequest
     public string  $description;
     public array   $extraData;
     public array   $customerInfo;
+    public array   $receiptInfo;
     public array   $request;
     private string $paymentType;
 
@@ -47,6 +48,14 @@ class WebPayment extends BaseRequest
             ],
             'CustomerInfo' => $customerInfo,
         ];
+
+        if (!empty($this->receiptInfo) && is_array($this->receiptInfo)) {
+            $req['ReceiptData'] = [
+                'timestamp' => date('d.m.Y H:i:s'),
+                'external_id' => $this->orderId,
+                'receipt' => $this->receiptInfo
+            ];
+        }
 
         if ($this->extraData) {
             $req['PaymentRequest'] += ['ExtraData' => $this->extraData];
