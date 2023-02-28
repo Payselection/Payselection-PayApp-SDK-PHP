@@ -15,6 +15,7 @@ class BaseHook
     protected array   $request;
     protected string  $siteId;
     protected string  $secretKey;
+    protected string  $webhookUrl;
     private   array   $configParams;
 
     /**
@@ -26,6 +27,7 @@ class BaseHook
         $this->loadConfiguration($filePath);
         $this->siteId    = $this->configParams['site_id'];
         $this->secretKey = $this->configParams['secret_key'];
+        $this->webhookUrl = $this->configParams['webhook_url'];
 
         $request = file_get_contents('php://input');
         $headers = getallheaders();
@@ -39,9 +41,9 @@ class BaseHook
 
         // Check signature
         $signBody = 'POST' . PHP_EOL .
-            '/' . PHP_EOL .
+            $this->webhookUrl . PHP_EOL .
             $this->siteId . PHP_EOL .
-            json_encode($request);
+            $request;
 
         if ($headers['X-Webhook-Signature'] !== self::getSignature($signBody, $this->secretKey))
             throw new BadTypeException('Signature error');

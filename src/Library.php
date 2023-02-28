@@ -129,7 +129,7 @@ class Library
     {
         $uid = $this->getIdempotenceKey();
         $msg = 'POST' . PHP_EOL .
-            $method . PHP_EOL .
+            '/' . $method . PHP_EOL .
             $this->siteId . PHP_EOL .
             $uid . PHP_EOL .
             json_encode($postData);
