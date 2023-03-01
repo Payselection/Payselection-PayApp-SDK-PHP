@@ -2,13 +2,15 @@
 
 namespace PaySelection;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Enum\PaymentType;
+use PaySelection\Exceptions\BadTypeException;
 use PaySelection\Request\WebPayment;
 use PaySelection\Response\PSResponse;
-use GuzzleHttp\Client;
 use PaySelection\Response\WebPayResponse;
+use PaySelection\Hook\HookPay;
 use Psr\Http\Message\ResponseInterface;
 
 class Library
@@ -89,6 +91,19 @@ class Library
         $webPaymentData->request = $request;
 
         return $this->requestWebPay($method, $webPaymentData->makeRequestExtended());
+    }
+
+    /**
+     * @throws BadTypeException
+     */
+    public function hookPay(): HookPay
+    {
+        $hook = new HookPay();
+        $hook->siteId     = $this->configParams['site_id'];
+        $hook->secretKey  = $this->configParams['secret_key'];
+        $hook->webhookUrl = $this->configParams['webhook_url'];
+        $hook->hook();
+        return $hook;
     }
 
     /**

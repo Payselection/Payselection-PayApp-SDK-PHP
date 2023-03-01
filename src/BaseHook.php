@@ -13,22 +13,16 @@ class BaseHook
      * @var array
      */
     protected array   $request;
-    protected string  $siteId;
-    protected string  $secretKey;
-    protected string  $webhookUrl;
-    private   array   $configParams;
+    public string  $siteId;
+    public string  $secretKey;
+    public string  $webhookUrl;
 
     /**
-     *
+     * @return void
      * @throws BadTypeException
      */
-    public function __construct(string $filePath = null)
+    public function hook()
     {
-        $this->loadConfiguration($filePath);
-        $this->siteId    = $this->configParams['site_id'];
-        $this->secretKey = $this->configParams['secret_key'];
-        $this->webhookUrl = $this->configParams['webhook_url'];
-
         $request = file_get_contents('php://input');
         $headers = getallheaders();
         if (
@@ -56,6 +50,9 @@ class BaseHook
         $this->fill();
     }
 
+    /**
+     * @return array
+     */
     public function getRequest(): array
     {
         return $this->request;
@@ -87,19 +84,5 @@ class BaseHook
                 $this->$key = $this->request[$requestKey];
             }
         }
-    }
-
-    public function loadConfiguration($filePath = null): BaseHook
-    {
-        if ($filePath) {
-            $data = file_get_contents($filePath);
-        } else {
-            $data = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . "configuration.json");
-        }
-
-        $paramsArray = json_decode($data, true);
-        $this->configParams = $paramsArray;
-
-        return $this;
     }
 }
