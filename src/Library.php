@@ -2,13 +2,15 @@
 
 namespace PaySelection;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Enum\PaymentType;
+use PaySelection\Exceptions\BadTypeException;
 use PaySelection\Request\WebPayment;
 use PaySelection\Response\PSResponse;
-use GuzzleHttp\Client;
 use PaySelection\Response\WebPayResponse;
+use PaySelection\Hook\HookPay;
 use Psr\Http\Message\ResponseInterface;
 
 class Library
@@ -92,6 +94,19 @@ class Library
     }
 
     /**
+     * @throws BadTypeException
+     */
+    public function hookPay(): HookPay
+    {
+        $hook = new HookPay();
+        $hook->siteId     = $this->configParams['site_id'];
+        $hook->secretKey  = $this->configParams['secret_key'];
+        $hook->webhookUrl = $this->configParams['webhook_url'];
+        $hook->hook();
+        return $hook;
+    }
+
+    /**
      * @param string $method
      * @param array $postData
      * @return PSResponse
@@ -129,7 +144,7 @@ class Library
     {
         $uid = $this->getIdempotenceKey();
         $msg = 'POST' . PHP_EOL .
-            $method . PHP_EOL .
+            '/' . $method . PHP_EOL .
             $this->siteId . PHP_EOL .
             $uid . PHP_EOL .
             json_encode($postData);

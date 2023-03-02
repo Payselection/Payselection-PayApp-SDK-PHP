@@ -2,5 +2,6 @@
   "webpay_url" : "https://webform.payselection.com",
   "api_url" : "https://gw.payselection.com",
   "site_id" : "1",
-  "secret_key" : "###########"
+  "secret_key" : "###########",
+  "webhook_url" : "https://webhook.site/notification/"
 }

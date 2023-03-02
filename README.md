@@ -17,6 +17,9 @@ composer require payselection/payselection-php-sdk
 
 ```php
 $apiClient = new \PaySelection\Library();
+$apiClient->setConfiguration(array(
+    'site_id' => '1',
+    'secret_key' => 'z57FlprTG58s22'));
 $response = $apiClient->webPayCreate(
     100,
     'RUB',
@@ -75,6 +78,20 @@ $response = $apiClient->webPayCreate(
 
 echo $response->redirectUrl;
 ```
+
+## Работа с webhooks
+
+```php
+$apiClient = new \PaySelection\Library();
+$apiClient->setConfiguration(array(
+    'site_id' => '1',
+    'secret_key' => 'z57FlprTG58s22',
+    'webhook_url' => 'https://webhook.site/61dg886r-a648-423e-9146-30576b2ad8e4'));
+$result = $apiClient->hookPay();
+
+echo $result->event;
+```
+Значение `webhook_url` должно совпадать со значением `WebhookUrl` из запроса **Create**
 
 ## License
 
