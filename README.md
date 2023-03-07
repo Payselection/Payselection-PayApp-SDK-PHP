@@ -16,11 +16,27 @@ composer require payselection/payselection-php-sdk
 
 ## Начало работы
 
+1. Создайте экземпляр объекта клиента.
 ```php
 $apiClient = new \PaySelection\Library();
 $apiClient->setConfiguration(array(
-    'site_id' => '1',
-    'secret_key' => 'z57FlprTG58s22'));
+    'webpay_url' => 'https://webform.payselection.com',
+    'api_url' => 'https://gw.payselection.com',
+    'site_id' => '123',
+    'secret_key' => '###########',
+    'webhook_url' => 'https://webhook.site/notification/'));
+```
+2. Вызовите нужный метод API. 
+
+## Методы API
+
+### Webpay create
+
+[Webpay create](https://api.payselection.com/#operation/Create)
+
+Создайте платёж, чтобы Покупатель смог оплатить его
+
+```php
 $response = $apiClient->webPayCreate(
     100,
     'RUB',
@@ -79,8 +95,21 @@ $response = $apiClient->webPayCreate(
 
 echo $response->redirectUrl;
 ```
+### Get transaction Status
 
-## Операции
+[Статус транзакции](https://api.payselection.com/#operation//transactions/{transactionId}:)
+
+Получить статус по TransactionId.
+
+```php
+try {
+    $response = $apiClient->getTransactionStatus('PS00000000000001');
+} catch (\Exception $e) {
+    $response = $e->getMessage();
+}
+
+var_dump($response);
+```
 
 ### Pay
 
@@ -163,7 +192,7 @@ try {
     $response = $e->getMessage();
 }
 
-var_dump( $response);
+var_dump($response);
 ```
 
 ### Block
@@ -247,7 +276,7 @@ try {
     $response = $e->getMessage();
 }
 
-var_dump( $response);
+var_dump($response);
 ```
 
 ### Refund
@@ -316,7 +345,7 @@ try {
     $response = $e->getMessage();
 }
 
-var_dump( $response);
+var_dump($response);
 ```
 
 ### Confirm
@@ -339,7 +368,7 @@ try {
     $response = $e->getMessage();
 }
 
-var_dump( $response);
+var_dump($response);
 ```
 
 ### Charge
@@ -362,7 +391,7 @@ try {
     $response = $e->getMessage();
 }
 
-var_dump( $response);
+var_dump($response);
 ```
 
 ### Cancel
@@ -385,17 +414,12 @@ try {
     $response = $e->getMessage();
 }
 
-var_dump( $response);
+var_dump($response);
 ```
 
 ## Работа с webhooks
 
 ```php
-$apiClient = new \PaySelection\Library();
-$apiClient->setConfiguration(array(
-    'site_id' => '1',
-    'secret_key' => 'z57FlprTG58s22',
-    'webhook_url' => 'https://webhook.site/61dg886r-a648-423e-9146-30576b2ad8e4'));
 $result = $apiClient->hookPay();
 
 echo $result->event;

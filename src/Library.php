@@ -7,8 +7,9 @@ use GuzzleHttp\Exception\GuzzleException;
 use PaySelection\Enum\PaymentType;
 use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Exceptions\BadTypeException;
-use PaySelection\Request\ExtendedRequest;
 use PaySelection\Hook\HookPay;
+use PaySelection\Request\ExtendedRequest;
+use PaySelection\Request\StatusRequest;
 use PaySelection\Request\WebPayment;
 use PaySelection\Response\CancelResponse;
 use PaySelection\Response\ChargeResponse;
@@ -16,6 +17,7 @@ use PaySelection\Response\ConfirmResponse;
 use PaySelection\Response\PayResponse;
 use PaySelection\Response\PSResponse;
 use PaySelection\Response\RefundResponse;
+use PaySelection\Response\TransactionResponse;
 use PaySelection\Response\WebPayResponse;
 use Psr\Http\Message\ResponseInterface;
 
@@ -80,7 +82,7 @@ class Library
         $webPaymentData->customerInfo = $customerInfo;
         $webPaymentData->receiptInfo  = $receiptInfo;
 
-        return $this->request($method, $webPaymentData->makeRequest(), new WebPayResponse());
+        return $this->request($method, $webPaymentData->makeRequest(), 'POST', new WebPayResponse());
     }
 
     /**
@@ -96,7 +98,7 @@ class Library
         $webPaymentData = new WebPayment(PaymentType::PAY);
         $webPaymentData->request = $request;
 
-        return $this->requestWebPay($method, $webPaymentData->makeRequestExtended());
+        return $this->request($method, $webPaymentData->makeRequestExtended(), 'POST', new WebPayResponse());
     }
 
     /**
@@ -113,7 +115,7 @@ class Library
 
         $data = new ExtendedRequest($request);
 
-        return $this->request($method, $data->makeRequest(), new PayResponse());
+        return $this->request($method, $data->makeRequest(), 'POST', new PayResponse());
     }
 
     /**
@@ -130,7 +132,7 @@ class Library
 
         $data = new ExtendedRequest($request);
 
-        return $this->request($method, $data->makeRequest(), new PayResponse());
+        return $this->request($method, $data->makeRequest(), 'POST', new PayResponse());
     }
 
     /**
@@ -147,7 +149,7 @@ class Library
 
         $data = new ExtendedRequest($request);
 
-        return $this->request($method, $data->makeRequest(), new RefundResponse());
+        return $this->request($method, $data->makeRequest(), 'POST', new RefundResponse());
     }
 
     /**
@@ -165,7 +167,7 @@ class Library
 
         $data = new ExtendedRequest($request);
 
-        return $this->request($method, $data->makeRequest(), new ConfirmResponse());
+        return $this->request($method, $data->makeRequest(), 'POST', new ConfirmResponse());
     }
 
     /**
@@ -182,7 +184,7 @@ class Library
 
         $data = new ExtendedRequest($request);
 
-        return $this->request($method, $data->makeRequest(), new ChargeResponse());
+        return $this->request($method, $data->makeRequest(), 'POST', new ChargeResponse());
     }
 
     /**
@@ -199,7 +201,24 @@ class Library
 
         $data = new ExtendedRequest($request);
 
-        return $this->request($method, $data->makeRequest(), new CancelResponse());
+        return $this->request($method, $data->makeRequest(), 'POST', new CancelResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation//transactions/{transactionId}:
+     * Получить статус по TransactionId.
+     * @param array $request
+     * @return TransactionResponse
+     * @throws GuzzleException
+     */
+    public function getTransactionStatus(string $id): TransactionResponse
+    {
+        $method = PSMethodsEnum::TRANSACTION_STATUS;
+        $this->createClient($method);
+
+        $data = new StatusRequest($id);
+
+        return $this->request($method, $data->makeRequest(), 'GET', new TransactionResponse());
     }
 
     /**
@@ -222,9 +241,9 @@ class Library
      * @param PSResponse|null $psResponse
      * @return mixed
      */
-    protected function request(string $method, array $postData = [], ?PSResponse $psResponse = null): PSResponse
+    protected function request(string $method, array $postData = [], string $request_method = 'POST', ?PSResponse $psResponse = null): PSResponse
     {
-        $response = $this->sendRequest($method, $postData);
+        $response = $this->sendRequest($method, $postData, $request_method);
 
         $psResponse = $psResponse ?? new PSResponse();
         return $psResponse->fillByResponse($response);
@@ -236,10 +255,10 @@ class Library
      * @return ResponseInterface
      * @throws GuzzleException
      */
-    public function sendRequest(string $method, array $postData = []): ResponseInterface
+    public function sendRequest(string $method, array $postData = [], string $request_method): ResponseInterface
     {
         $uid = $this->getIdempotenceKey();
-        $msg = 'POST' . PHP_EOL .
+        $msg = $request_method . PHP_EOL .
             '/' . $method . PHP_EOL .
             $this->siteId . PHP_EOL .
             $uid . PHP_EOL .
@@ -253,7 +272,12 @@ class Library
         $options = ['json' => $postData];
         $options['headers'] = $headers;
 
-        return $this->client->post($method, $options);
+        if ( 'POST' === $request_method ) {
+            return $this->client->post($method, $options);
+        } elseif ( 'GET' === $request_method ) {
+            return $this->client->get($method.'/'.$postData['id'], $options);
+        }
+        
     }
 
     /**

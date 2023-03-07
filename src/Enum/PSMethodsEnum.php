@@ -40,4 +40,9 @@ class PSMethodsEnum extends Enum
      * Operation Cancel
      */
     public const PAYMENTS_CANCEL = 'payments/cancellation';
+
+    /**
+     * Get transaction status
+     */
+    public const TRANSACTION_STATUS = 'transactions';
 }
