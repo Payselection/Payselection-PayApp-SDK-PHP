@@ -4,13 +4,19 @@ namespace PaySelection;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Enum\PaymentType;
+use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Exceptions\BadTypeException;
-use PaySelection\Request\WebPayment;
-use PaySelection\Response\PSResponse;
-use PaySelection\Response\WebPayResponse;
+use PaySelection\Request\ExtendedRequest;
 use PaySelection\Hook\HookPay;
+use PaySelection\Request\WebPayment;
+use PaySelection\Response\CancelResponse;
+use PaySelection\Response\ChargeResponse;
+use PaySelection\Response\ConfirmResponse;
+use PaySelection\Response\PayResponse;
+use PaySelection\Response\PSResponse;
+use PaySelection\Response\RefundResponse;
+use PaySelection\Response\WebPayResponse;
 use Psr\Http\Message\ResponseInterface;
 
 class Library
@@ -74,7 +80,7 @@ class Library
         $webPaymentData->customerInfo = $customerInfo;
         $webPaymentData->receiptInfo  = $receiptInfo;
 
-        return $this->requestWebPay($method, $webPaymentData->makeRequest());
+        return $this->request($method, $webPaymentData->makeRequest(), new WebPayResponse());
     }
 
     /**
@@ -94,6 +100,109 @@ class Library
     }
 
     /**
+     * https://api.payselection.com/#operation/Pay
+     * Одностадийная операция оплаты – денежные средства списываются сразу после ее проведения. 
+     * @param array $request
+     * @return PayResponse
+     * @throws GuzzleException
+     */
+    public function createPayment(array $request): PayResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_PAY;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), new PayResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Block
+     * Двухстадийная операция оплаты – денежные средства блокируются на карте.
+     * @param array $request
+     * @return PayResponse
+     * @throws GuzzleException
+     */
+    public function CreateBlock(array $request): PayResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_BLOCK;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), new PayResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Refund
+     * Только успешная транзакция может быть возвращена
+     * @param array $request
+     * @return RefundResponse
+     * @throws GuzzleException
+     */
+    public function createRefund(array $request): RefundResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_REFUND;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), new RefundResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Сonfirm
+     * Используется для операций Pay или Block с 3DS после получения результатов аутентификации от банка 
+     * для завершения одностадийной/двухстадийной операции оплаты.
+     * @param array $request
+     * @return ConfirmResponse
+     * @throws GuzzleException
+     */
+    public function сonfirmPayment(array $request): ConfirmResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_CONFIRM;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), new ConfirmResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Charge
+     * Списание средств с карты в рамках проведенной ранее двухстадийной операции оплаты.
+     * @param array $request
+     * @return ChargeResponse
+     * @throws GuzzleException
+     */
+    public function chargePayment(array $request): ChargeResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_CHARGE;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), new ChargeResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Cancel
+     * Отмена блокировки средств на карте в рамках ранее проведенной двухстадийной операции оплаты.
+     * @param array $request
+     * @return CancelResponse
+     * @throws GuzzleException
+     */
+    public function cancelPayment(array $request): CancelResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_CANCEL;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), new CancelResponse());
+    }
+
+    /**
      * @throws BadTypeException
      */
     public function hookPay(): HookPay
@@ -107,31 +216,18 @@ class Library
     }
 
     /**
+     * Базовый запрос
      * @param string $method
      * @param array $postData
-     * @return PSResponse
-     * @throws GuzzleException
+     * @param PSResponse|null $psResponse
+     * @return mixed
      */
-    protected function request(string $method, array $postData = []): PSResponse
+    protected function request(string $method, array $postData = [], ?PSResponse $psResponse = null): PSResponse
     {
         $response = $this->sendRequest($method, $postData);
 
-        $psResponse = new PSResponse();
+        $psResponse = $psResponse ?? new PSResponse();
         return $psResponse->fillByResponse($response);
-    }
-
-    /**
-     * @param string $method
-     * @param array $postData
-     * @return WebPayResponse
-     * @throws GuzzleException
-     */
-    protected function requestWebPay(string $method, array $postData = []): WebPayResponse
-    {
-        $response = $this->sendRequest($method, $postData);
-
-        $webPayResponse = new WebPayResponse();
-        return $webPayResponse->fillByResponse($response);
     }
 
     /**
