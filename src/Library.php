@@ -25,8 +25,8 @@ class Library
 {
     protected string  $siteId;
     protected string  $secretKey;
-    protected string  $webpay_url;
-    protected string  $api_url;
+    protected string  $webpayUrl;
+    protected string  $apiUrl;
     protected Client  $client;
     private   array   $configParams;
 
@@ -326,15 +326,15 @@ class Library
      */
     private function createClient(string $method): void
     {
-        $this->webpay_url = $this->configParams['webpay_url'];
-        $this->api_url    = $this->configParams['api_url'];
+        $this->webpayUrl = $this->configParams['webpay_url'];
+        $this->apiUrl    = $this->configParams['api_url'];
         $this->siteId     = $this->configParams['site_id'];
         $this->secretKey  = $this->configParams['secret_key'];
 
         if ($method === PSMethodsEnum::PAYMENTS_WEBPAY) {
-            $url = $this->webpay_url;
+            $url = $this->webpayUrl;
         } else {
-            $url = $this->api_url;
+            $url = $this->apiUrl;
         }
 
         $this->client = new Client([
