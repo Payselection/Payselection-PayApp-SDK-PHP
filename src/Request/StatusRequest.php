@@ -6,7 +6,7 @@ use PaySelection\BaseRequest;
 
 class StatusRequest extends BaseRequest
 {
-    public string  $id;
+    public string $id;
     
     function __construct($id) {
         $this->id = $id;

@@ -44,5 +44,40 @@ class PSMethodsEnum extends Enum
     /**
      * Get transaction status
      */
-    public const TRANSACTION_STATUS = 'transactions';
+    public const TRANSACTION_STATUS = 'transactions/%s';
+
+    /**
+     * Get order status
+     */
+    public const ORDER_STATUS = 'orders/%s';
+
+    /**
+     * Operation Rebill
+     */
+    public const PAYMENTS_REBILL = 'payments/requests/rebill';
+
+    /**
+     * Operation Unsubscribe
+     */
+    public const PAYMENTS_UNSUBSCRIBE = 'payments/unsubscribe';
+
+    /**
+     * Operation Recurring
+     */
+    public const PAYMENTS_RECURRING = 'payments/recurring';
+
+    /**
+     * Operation Recurring Unsubscribe
+     */
+    public const PAYMENTS_RECURRING_UNSUBSCRIBE = 'recurring/unsubscribe';
+
+    /**
+     * Operation Balance
+     */
+    public const BALANCE = 'balance';
+
+    /**
+     * Operation Payout
+     */
+    public const PAYMENTS_PAYOUT = 'payouts';
 }
