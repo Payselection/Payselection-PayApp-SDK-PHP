@@ -62,6 +62,7 @@ class Library
      * @param string $description
      * @param array|null $extraData
      * @param array|null $customerInfo
+     * @param array|null $receiptInfo
      * @return WebPayResponse
      * @throws GuzzleException
      */
