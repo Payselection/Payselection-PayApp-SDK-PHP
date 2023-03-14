@@ -2,21 +2,13 @@
 
 namespace PaySelection\Response;
 
-use PaySelection\BaseRequest;
-use Psr\Http\Message\ResponseInterface;
+use PaySelection\Response\PSResponse;
 
-class WebPayResponse extends BaseRequest
+class WebPayResponse extends PSResponse
 {
-    public string $redirectUrl;
+    public ?string $redirectUrl = null;
 
-    /**
-     *
-     */
-    public function fillByResponse(ResponseInterface $response): self
-    {
-        $responseBody = json_decode($response->getBody());
+    public function fill($responseBody) {
         $this->redirectUrl = trim($responseBody ?? '', '"');
-
-        return $this;
     }
 }
