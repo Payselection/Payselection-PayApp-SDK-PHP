@@ -52,7 +52,7 @@ $apiClient->setConfiguration([
 
 ### Create Webpay <a name="create-webpay"></a>
 
-[Create Webpay](https://api.payselection.com/#operation/Create)
+[Create Webpay в документации](https://api.payselection.com/#operation/Create)
 
 Создайте платёж, чтобы Покупатель смог оплатить его
 
@@ -189,7 +189,7 @@ var_dump($response);
 ```
 
 ### Get Order Status <a name="get-order-status"></a>
-[Статус ордера](https://api.payselection.com/#operation//orders/{OrderId}:)
+[Статус ордера в документации](https://api.payselection.com/#operation//orders/{OrderId}:)
 
 Получить статус ордера по OrderId.
 
@@ -205,7 +205,7 @@ var_dump($response);
 
 ### Get transaction Status <a name="get-transaction-status"></a>
 
-[Статус транзакции](https://api.payselection.com/#operation//transactions/{transactionId}:)
+[Статус транзакции в документации](https://api.payselection.com/#operation//transactions/{transactionId}:)
 
 Получить статус по TransactionId.
 
@@ -221,7 +221,7 @@ var_dump($response);
 
 ### Create Payment <a name="create-payment"></a>
 
-[Operation Pay](https://api.payselection.com/#operation/Pay)
+[Operation Pay в документации](https://api.payselection.com/#operation/Pay)
 
 Одностадийная операция оплаты – денежные средства списываются сразу после ее проведения.
 
@@ -303,7 +303,7 @@ var_dump($response);
 
 ### Create Block <a name="create-block"></a>
 
-[Operation Block](https://api.payselection.com/#operation/Block)
+[Operation Block в документации](https://api.payselection.com/#operation/Block)
 
 Двухстадийная операция оплаты – денежные средства блокируются на карте. Если авторизация прошла успешно, необходимо завершить транзакцию в течение 5 дней, если же вы не подтвердите транзакцию запросом на списание в течение 5 дней, снятие денежных средств будет автоматически отменено. Кроме того, есть возможность задать rebillFlag для включения рекуррентных платежей.
 
@@ -385,7 +385,7 @@ var_dump($response);
 
 ### Rebill Payment <a name="rebill-payment"></a>
 
-[Operation Rebill](https://api.payselection.com/#operation/Rebill)
+[Operation Rebill в документации](https://api.payselection.com/#operation/Rebill)
 
 Операция автоматического списания средств по привязанной ранее карте.
 
@@ -455,7 +455,7 @@ var_dump($response);
 
 ### Confirm Payment <a name="confirm-payment"></a>
 
-[Operation Confirm](https://api.payselection.com/#operation/Confirm)
+[Operation Confirm в документации](https://api.payselection.com/#operation/Confirm)
 
 Используется для операций Pay или Block с 3DS после получения результатов аутентификации от банка для завершения одностадийной/двухстадийной операции оплаты.
 
@@ -476,7 +476,7 @@ var_dump($response);
 
 ### Create Refund <a name="create-refund"></a>
 
-[Operation Refund](https://api.payselection.com/#operation/Refund)
+[Operation Refund в документации](https://api.payselection.com/#operation/Refund)
 
 Только успешная транзакция может быть возвращена
 
@@ -543,7 +543,7 @@ var_dump($response);
 
 ### Cancel Payment <a name="cancel-payment"></a>
 
-[Operation Cancel](https://api.payselection.com/#operation/Cancel)
+[Operation Cancel в документации](https://api.payselection.com/#operation/Cancel)
 
 Отмена блокировки средств на карте в рамках ранее проведенной двухстадийной операции оплаты.
 
@@ -564,7 +564,7 @@ var_dump($response);
 
 ### Charge Payment <a name="charge-payment"></a>
 
-[Operation Charge](https://api.payselection.com/#operation/Charge)
+[Operation Charge в документации](https://api.payselection.com/#operation/Charge)
 
 Списание средств с карты в рамках проведенной ранее двухстадийной операции оплаты.
 
@@ -585,7 +585,7 @@ var_dump($response);
 
 ### Cancel Subscription <a name="cancel-subscription"></a>
 
-[Operation Unsubscribe](https://api.payselection.com/#operation/Unsubscribe)
+[Operation Unsubscribe в документации](https://api.payselection.com/#operation/Unsubscribe)
 
 Отмена рекуррентных платежей.При использовании данного метода произойдет отписка по всем зарегистрированным регулярным оплатам в рамках переданного RebillId
 
@@ -603,7 +603,7 @@ var_dump($response);
 
 ### Create Payout <a name="create-payout"></a>
 
-[Operation Payout](https://api.payselection.com/#operation/Payout)
+[Operation Payout в документации](https://api.payselection.com/#operation/Payout)
 
 Одностадийная операция оплаты – денежные средства списываются сразу после ее проведения.
 
@@ -681,7 +681,7 @@ var_dump($response);
 
 ### Get Balance <a name="get-balance"></a>
 
-[Operation Balance](https://api.payselection.com/#operation/Balance)
+[Operation Balance в документации](https://api.payselection.com/#operation/Balance)
 
 Операция проверки доступного баланса для Payout.
 
@@ -696,7 +696,7 @@ var_dump($response);
 ```
 ### Register Recurring <a name="register-recurring"></a>
 
-[Operation Recurring](https://api.payselection.com/#operation/Recurring)
+[Operation Recurring в документации](https://api.payselection.com/#operation/Recurring)
 
 Регистрация регулярной оплаты по привязанной ранее карте.
 
@@ -770,7 +770,7 @@ var_dump($response);
 
 ### Cancel Recurring <a name="cancel-recurring"></a>
 
-[Operation Recurring Unsubscribe](https://api.payselection.com/#operation/Recurring%20Unsubscribe)
+[Operation Recurring Unsubscribe в документации](https://api.payselection.com/#operation/Recurring%20Unsubscribe)
 
 Отмена регулярной оплаты.
 
@@ -790,7 +790,7 @@ var_dump($response);
 
 ## Работа с webhooks <a name="webhooks"></a>
 
-[Webhook](https://api.payselection.com/#operation/Webhooks)
+[Webhook в документации](https://api.payselection.com/#operation/Webhooks)
 
 ```php
 $result = $apiClient->hookPay();
