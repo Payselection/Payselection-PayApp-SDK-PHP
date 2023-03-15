@@ -69,7 +69,7 @@ class PSMethodsEnum extends Enum
     /**
      * Operation Recurring Unsubscribe
      */
-    public const PAYMENTS_RECURRING_UNSUBSCRIBE = 'recurring/unsubscribe';
+    public const PAYMENTS_RECURRING_UNSUBSCRIBE = 'payments/recurring/unsubscribe';
 
     /**
      * Operation Balance
