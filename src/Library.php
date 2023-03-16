@@ -4,21 +4,34 @@ namespace PaySelection;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Enum\PaymentType;
+use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Exceptions\BadTypeException;
-use PaySelection\Request\WebPayment;
-use PaySelection\Response\PSResponse;
-use PaySelection\Response\WebPayResponse;
 use PaySelection\Hook\HookPay;
+use PaySelection\Request\ExtendedRequest;
+use PaySelection\Request\StatusRequest;
+use PaySelection\Request\WebPayment;
+use PaySelection\Response\BalanceResponse;
+use PaySelection\Response\CancelResponse;
+use PaySelection\Response\ChargeResponse;
+use PaySelection\Response\ConfirmResponse;
+use PaySelection\Response\OrderResponse;
+use PaySelection\Response\PayResponse;
+use PaySelection\Response\PSResponse;
+use PaySelection\Response\RecurringCancelResponse;
+use PaySelection\Response\RecurringResponse;
+use PaySelection\Response\RefundResponse;
+use PaySelection\Response\TransactionResponse;
+use PaySelection\Response\UnsubscribeResponse;
+use PaySelection\Response\WebPayResponse;
 use Psr\Http\Message\ResponseInterface;
 
 class Library
 {
     protected string  $siteId;
     protected string  $secretKey;
-    protected string  $webpay_url;
-    protected string  $api_url;
+    protected string  $webpayUrl;
+    protected string  $apiUrl;
     protected Client  $client;
     private   array   $configParams;
 
@@ -49,6 +62,7 @@ class Library
      * @param string $description
      * @param array|null $extraData
      * @param array|null $customerInfo
+     * @param array|null $receiptInfo
      * @return WebPayResponse
      * @throws GuzzleException
      */
@@ -74,23 +88,264 @@ class Library
         $webPaymentData->customerInfo = $customerInfo;
         $webPaymentData->receiptInfo  = $receiptInfo;
 
-        return $this->requestWebPay($method, $webPaymentData->makeRequest());
-    }
+        return $this->request($method, $webPaymentData->makeRequest(), 'POST', new WebPayResponse());
+    } 
 
     /**
+     * https://api.payselection.com/#operation/Create
+     * Создайте платёж, чтобы Покупатель смог оплатить его
      * @param array $request
      * @return WebPayResponse
      * @throws GuzzleException
      */
-    public function webPayCreateExtended(array $request): WebPayResponse
+    public function createWebPay(array $request): WebPayResponse
     {
         $method = PSMethodsEnum::PAYMENTS_WEBPAY;
         $this->createClient($method);
 
-        $webPaymentData = new WebPayment(PaymentType::PAY);
-        $webPaymentData->request = $request;
+        $data = new ExtendedRequest($request);
 
-        return $this->requestWebPay($method, $webPaymentData->makeRequestExtended());
+        return $this->request($method, $data->makeRequest(), 'POST', new WebPayResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Pay
+     * Одностадийная операция оплаты – денежные средства списываются сразу после ее проведения. 
+     * @param array $request
+     * @return PayResponse
+     * @throws GuzzleException
+     */
+    public function createPayment(array $request): PayResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_PAY;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new PayResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Block
+     * Двухстадийная операция оплаты – денежные средства блокируются на карте.
+     * @param array $request
+     * @return PayResponse
+     * @throws GuzzleException
+     */
+    public function CreateBlock(array $request): PayResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_BLOCK;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new PayResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Refund
+     * Только успешная транзакция может быть возвращена
+     * @param array $request
+     * @return RefundResponse
+     * @throws GuzzleException
+     */
+    public function createRefund(array $request): RefundResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_REFUND;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new RefundResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Сonfirm
+     * Используется для операций Pay или Block с 3DS после получения результатов аутентификации от банка 
+     * для завершения одностадийной/двухстадийной операции оплаты.
+     * @param array $request
+     * @return ConfirmResponse
+     * @throws GuzzleException
+     */
+    public function сonfirmPayment(array $request): ConfirmResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_CONFIRM;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new ConfirmResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Charge
+     * Списание средств с карты в рамках проведенной ранее двухстадийной операции оплаты.
+     * @param array $request
+     * @return ChargeResponse
+     * @throws GuzzleException
+     */
+    public function chargePayment(array $request): ChargeResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_CHARGE;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new ChargeResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Cancel
+     * Отмена блокировки средств на карте в рамках ранее проведенной двухстадийной операции оплаты.
+     * @param array $request
+     * @return CancelResponse
+     * @throws GuzzleException
+     */
+    public function cancelPayment(array $request): CancelResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_CANCEL;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new CancelResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Rebill
+     * Операция автоматического списания средств по привязанной ранее карте.
+     * @param array $request
+     * @return PayResponse
+     * @throws GuzzleException
+     */
+    public function rebillPayment(array $request): PayResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_REBILL;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new PayResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Unsubscribe
+     * Отмена рекуррентных платежей.
+     * При использовании данного метода произойдет отписка 
+     * по всем зарегистрированным регулярным оплатам в рамках переданного RebillId
+     * @param array $request
+     * @return UnsubscribeResponse
+     * @throws GuzzleException
+     */
+    public function cancelSubscription(array $request): UnsubscribeResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_UNSUBSCRIBE;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new UnsubscribeResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Recurring
+     * Регистрация регулярной оплаты по привязанной ранее карте.
+     * @param array $request
+     * @return RecurringResponse
+     * @throws GuzzleException
+     */
+    public function registerRecurring(array $request): RecurringResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_RECURRING;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new RecurringResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Recurring%20Unsubscribe
+     * Отмена регулярной оплаты.
+     * @param array $request
+     * @return RecurringCancelResponse
+     * @throws GuzzleException
+     */
+    public function cancelRecurring(array $request): RecurringCancelResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_RECURRING_UNSUBSCRIBE;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new RecurringCancelResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Payout
+     * Credit transaction - это тип транзакции, когда денежные средства переводятся на счет держателя карты. 
+     * Денежные средства зачисляются на карту в течение двух банковских дней.
+     * @param array $request
+     * @return PayResponse
+     * @throws GuzzleException
+     */
+    public function createPayout(array $request): PayResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_PAYOUT;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new PayResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/transactions/{transactionId}:
+     * Получить статус по TransactionId.
+     * @param array $request
+     * @return TransactionResponse
+     * @throws GuzzleException
+     */
+    public function getTransactionStatus(string $id): TransactionResponse
+    {
+        $method = PSMethodsEnum::TRANSACTION_STATUS;
+        $this->createClient($method);
+
+        $data = new StatusRequest($id);
+
+        return $this->request(sprintf($method, $data->id), $data->makeRequest(), 'GET', new TransactionResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation//orders/{OrderId}:
+     * Получить статус по OrderId.
+     * @param array $request
+     * @return OrderResponse
+     * @throws GuzzleException
+     */
+    public function getOrderStatus(string $id): OrderResponse
+    {
+        $method = PSMethodsEnum::ORDER_STATUS;
+        $this->createClient($method);
+
+        $data = new StatusRequest($id);
+
+        return $this->request(sprintf($method, $data->id), $data->makeRequest(), 'GET', new OrderResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Balance
+     * Операция проверки доступного баланса для Payout.
+     * @param array $request
+     * @return BalanceResponse
+     * @throws GuzzleException
+     */
+    public function getBalance(): BalanceResponse
+    {
+        $method = PSMethodsEnum::BALANCE;
+        $this->createClient($method);
+
+        return $this->request($method, [], 'GET', new BalanceResponse());
     }
 
     /**
@@ -107,31 +362,18 @@ class Library
     }
 
     /**
+     * Базовый запрос
      * @param string $method
      * @param array $postData
-     * @return PSResponse
-     * @throws GuzzleException
+     * @param PSResponse|null $psResponse
+     * @return mixed
      */
-    protected function request(string $method, array $postData = []): PSResponse
+    protected function request(string $method, array $postData = [], string $request_method = 'POST', ?PSResponse $psResponse = null): PSResponse
     {
-        $response = $this->sendRequest($method, $postData);
+        $response = $this->sendRequest($method, $postData, $request_method);
 
-        $psResponse = new PSResponse();
+        $psResponse = $psResponse ?? new PSResponse();
         return $psResponse->fillByResponse($response);
-    }
-
-    /**
-     * @param string $method
-     * @param array $postData
-     * @return WebPayResponse
-     * @throws GuzzleException
-     */
-    protected function requestWebPay(string $method, array $postData = []): WebPayResponse
-    {
-        $response = $this->sendRequest($method, $postData);
-
-        $webPayResponse = new WebPayResponse();
-        return $webPayResponse->fillByResponse($response);
     }
 
     /**
@@ -140,10 +382,10 @@ class Library
      * @return ResponseInterface
      * @throws GuzzleException
      */
-    public function sendRequest(string $method, array $postData = []): ResponseInterface
+    public function sendRequest(string $method, array $postData = [], string $request_method): ResponseInterface
     {
         $uid = $this->getIdempotenceKey();
-        $msg = 'POST' . PHP_EOL .
+        $msg = $request_method . PHP_EOL .
             '/' . $method . PHP_EOL .
             $this->siteId . PHP_EOL .
             $uid . PHP_EOL .
@@ -157,7 +399,12 @@ class Library
         $options = ['json' => $postData];
         $options['headers'] = $headers;
 
-        return $this->client->post($method, $options);
+        if ( 'POST' === $request_method ) {
+            return $this->client->post($method, $options);
+        } elseif ( 'GET' === $request_method ) {
+            return $this->client->get($method, $options);
+        }
+        
     }
 
     /**
@@ -206,15 +453,15 @@ class Library
      */
     private function createClient(string $method): void
     {
-        $this->webpay_url = $this->configParams['webpay_url'];
-        $this->api_url    = $this->configParams['api_url'];
+        $this->webpayUrl = $this->configParams['webpay_url'];
+        $this->apiUrl    = $this->configParams['api_url'];
         $this->siteId     = $this->configParams['site_id'];
         $this->secretKey  = $this->configParams['secret_key'];
 
         if ($method === PSMethodsEnum::PAYMENTS_WEBPAY) {
-            $url = $this->webpay_url;
+            $url = $this->webpayUrl;
         } else {
-            $url = $this->api_url;
+            $url = $this->apiUrl;
         }
 
         $this->client = new Client([

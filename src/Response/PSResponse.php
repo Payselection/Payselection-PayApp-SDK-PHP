@@ -3,39 +3,45 @@
 namespace PaySelection\Response;
 
 use PaySelection\BaseRequest;
-use PaySelection\Response\Models\BaseModel;
 use Psr\Http\Message\ResponseInterface;
+use stdClass;
 
 class PSResponse extends BaseRequest
 {
-    public bool    $success;
-    public ?string $message = null;
-    public ?string $warning = null;
-
-    public $model;
-
     public function fillByResponse(ResponseInterface $response): self
     {
-        $responseContent = json_decode($response->getBody()->getContents());
-
-        $this->success = $responseContent->Success ?? false;
-        $this->message = $responseContent->Message ?? 'Message is not set';
-        $this->warning = $responseContent->Warning ?? 'Warning is not set';
-        if (!empty($responseContent->Model)) {
-            $this->fillModel($responseContent->Model);
-        }
-
+        $responseContent = json_decode($response->getBody());
+        $this->fill($responseContent);
         return $this;
     }
 
-    public function fillModel($modelDate)
-    {
-        $model = $modelDate;
-        if (is_object($modelDate)) {
-            $model = new BaseModel();
-            $model->fill($modelDate);
-        }
+    public function get_helper_object() {
+        return false;
+    }
 
-        $this->model = $model;
+    public function fill(stdClass $responseContent)
+    {
+        $modelFields = get_object_vars($this);
+
+        foreach ($modelFields as $key => $field) {
+            $responseKey = ucfirst($key);
+            if (isset($responseContent->$responseKey)) {
+                $value = $responseContent->$responseKey;
+                if (gettype($value) !== 'object') {
+                    $this->{$key} = $value;
+                } elseif ($helper_object = $this->get_helper_object()) {
+                    $this->{$key} = $helper_object;
+                    $modelInnerFields = get_object_vars($this->$key);
+                    foreach ($modelInnerFields as $keyInner => $fieldInner) {
+                        $responseInnerKey = ucfirst($keyInner);
+                        if (isset($value->{$responseInnerKey})) {
+                            $valueInner = $value->{$responseInnerKey};
+                            $this->{$key}->{$keyInner} = $valueInner;
+                        }
+                    }
+                }
+            }
+        }
+        return $this;
     }
 }
