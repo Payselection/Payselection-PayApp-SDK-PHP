@@ -370,7 +370,7 @@ class Library
         $hook = new HookRecurring();
         $siteId     = $this->configParams['site_id'];
         $secretKey  = $this->configParams['secret_key'];
-        $webhookUrl = $this->configParams['recurring_webhook_url'];
+        $webhookUrl = ($url = $this->configParams['recurring_webhook_url']) ? $url : $this->configParams['webhook_url'];
         $hook->hook($siteId, $secretKey, $webhookUrl);
         return $hook;
     }

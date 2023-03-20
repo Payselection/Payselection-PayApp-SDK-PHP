@@ -2,7 +2,7 @@
 
 namespace PaySelection\Response;
 
-use PaySelection\Response\Helpers\ErrorResponse;
+use PaySelection\Model\ErrorResponse;
 use PaySelection\Response\PSResponse;
 
 class BalanceResponse extends PSResponse

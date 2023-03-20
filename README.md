@@ -51,6 +51,8 @@ $apiClient->setConfiguration([
 
 Значение `recurring_webhook_url` должно совпадать со значением `WebhookUrl` из запросов для Recurring
 
+Если `recurring_webhook_url` совпадает с `webhook_url`, то можно строку с `recurring_webhook_url` в методе выше опустить
+
 2. Вызовите нужный метод API. 
 
 ## Методы API <a name="методы-api"></a>
