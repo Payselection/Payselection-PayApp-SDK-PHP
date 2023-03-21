@@ -55,9 +55,6 @@ class BaseHook
         return hash_hmac("sha256", $body, $secretKey);
     }
 
-    /**
-     *
-     */
     private function fill($request)
     {
         $modelFields = get_object_vars($this);

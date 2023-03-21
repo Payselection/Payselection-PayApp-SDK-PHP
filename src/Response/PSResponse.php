@@ -27,7 +27,7 @@ class PSResponse extends BaseRequest
             $responseKey = ucfirst($key);
             if (isset($responseContent->$responseKey)) {
                 $value = $responseContent->$responseKey;
-                if (gettype($value) !== 'object') {
+                if (!is_object($value)) {
                     $this->{$key} = $value;
                 } elseif ($helper_object = $this->get_helper_object()) {
                     $this->{$key} = $helper_object;
