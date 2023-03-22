@@ -3,6 +3,7 @@
 namespace PaySelection\Hook;
 
 use PaySelection\BaseHook;
+use PaySelection\Model\ReceiptData;
 
 class HookPay extends BaseHook
 {
@@ -34,5 +35,6 @@ class HookPay extends BaseHook
     public ?string $mD                    = null;
     public ?string $redirectUrl           = null;
     public ?string $redirectMethod        = null;
+    public ?ReceiptData $receiptData      = null;
 
 }

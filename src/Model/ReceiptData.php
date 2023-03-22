@@ -8,5 +8,5 @@ class ReceiptData
 {
     public ?string $timestamp   = null;
     public ?string $external_id = null;
-    public ?stdClass $receipt   = null;
+    public ?array $receipt      = null;
 }
