@@ -784,9 +784,7 @@ var_dump($response);
 ```php
 try {
     $response = $apiClient->cancelRecurring([
-        'RebillId' => 'GE00000001173680',
-        'RecurringId' => '1173',
-        'AccountId' => 'order63',
+        'RecurringId' => '1173'
     ]);
 } catch (\Exception $e) {
     $response = $e->getMessage();

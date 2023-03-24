@@ -19,7 +19,7 @@ class HookRecurring extends BaseHook
     public ?string $startDate           = null;
     public ?string $interval            = null;
     public ?string $period              = null;
-    public ?string $maxPeriod           = null;
+    public ?string $maxPeriods          = null;
     public ?string $recurringId         = null;
     public ?string $recurringStatus     = null;
     public ?ReceiptData $receiptData    = null;
