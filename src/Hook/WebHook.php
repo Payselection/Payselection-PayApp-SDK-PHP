@@ -4,8 +4,9 @@ namespace PaySelection\Hook;
 
 use PaySelection\BaseHook;
 use PaySelection\Model\ReceiptData;
+use PaySelection\Model\RecurrentDetails;
 
-class HookPay extends BaseHook
+class WebHook extends BaseHook
 {
     public ?string $event                 = null;
     public ?string $transactionId         = null;
@@ -35,6 +36,15 @@ class HookPay extends BaseHook
     public ?string $mD                    = null;
     public ?string $redirectUrl           = null;
     public ?string $redirectMethod        = null;
+    public ?string $webhookUrl            = null;
+    public ?string $accountId             = null;
+    public ?string $startDate             = null;
+    public ?string $interval              = null;
+    public ?string $period                = null;
+    public ?string $maxPeriods            = null;
+    public ?string $recurringId           = null;
+    public ?string $recurringStatus       = null;
     public ?ReceiptData $receiptData      = null;
+    public ?RecurrentDetails $recurrent   = null;
 
 }

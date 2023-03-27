@@ -7,8 +7,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PaySelection\Enum\PaymentType;
 use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Exceptions\BadTypeException;
-use PaySelection\Hook\HookPay;
-use PaySelection\Hook\HookRecurring;
+use PaySelection\Hook\WebHook;
 use PaySelection\Request\ExtendedRequest;
 use PaySelection\Request\StatusRequest;
 use PaySelection\Request\WebPayment;
@@ -352,25 +351,12 @@ class Library
     /**
      * @throws BadTypeException
      */
-    public function hookPay(): HookPay
+    public function webHook(): WebHook
     {
-        $hook = new HookPay();
+        $hook = new WebHook();
         $siteId     = $this->configParams['site_id'];
         $secretKey  = $this->configParams['secret_key'];
         $webhookUrl = $this->configParams['webhook_url'];
-        $hook->hook($siteId, $secretKey, $webhookUrl);
-        return $hook;
-    }
-
-    /**
-     * @throws BadTypeException
-     */
-    public function hookRecurring(): HookRecurring
-    {
-        $hook = new HookRecurring();
-        $siteId     = $this->configParams['site_id'];
-        $secretKey  = $this->configParams['secret_key'];
-        $webhookUrl = ($url = $this->configParams['recurring_webhook_url']) ? $url : $this->configParams['webhook_url'];
         $hook->hook($siteId, $secretKey, $webhookUrl);
         return $hook;
     }

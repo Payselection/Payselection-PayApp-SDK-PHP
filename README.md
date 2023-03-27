@@ -21,8 +21,6 @@
     - [Register Recurring](#register-recurring)
     - [Cancel Recurring](#cancel-recurring)
 - [Работа с webhooks](#webhooks)
-    - [Payments Webhook](#webhook)
-    - [Recurring webhook](#recurring-webhook)
 
 ## Установка <a name="установка"></a>
 
@@ -42,16 +40,11 @@ $apiClient->setConfiguration([
     'api_url' => 'https://gw.payselection.com',
     'site_id' => '123',
     'secret_key' => '###########',
-    'webhook_url' => 'https://webhook.site/notification/',
-    'recurring_webhook_url' => 'https://webhook.site/notification/'
+    'webhook_url' => 'https://webhook.site/notification/'
 ]);
 ```
 
 Значение `webhook_url` должно совпадать со значением `WebhookUrl` из запросов
-
-Значение `recurring_webhook_url` должно совпадать со значением `WebhookUrl` из запросов для Recurring
-
-Если `recurring_webhook_url` совпадает с `webhook_url`, то можно строку с `recurring_webhook_url` в методе выше опустить
 
 2. Вызовите нужный метод API. 
 
@@ -795,27 +788,12 @@ var_dump($response);
 
 ## Работа с webhooks <a name="webhooks"></a>
 
-### Webhook <a name="webhook"></a>
-
 [Webhook в документации](https://api.payselection.com/#operation/Webhooks)
-
-```php
-try {
-    $result = $apiClient->hookPay();
-} catch (\Exception $e) {
-    $response = $e->getMessage();
-}
-
-var_dump($result);
-```
-
-### Webhook <a name="recurring-webhook"></a>
-
 [Webhook для подписок в документации](https://api.payselection.com/#tag/webhooks-dlya-podpisok)
 
 ```php
 try {
-    $result = $apiClient->hookRecurring();
+    $result = $apiClient->webHook();
 } catch (\Exception $e) {
     $response = $e->getMessage();
 }
