@@ -354,10 +354,10 @@ class Library
     public function hookPay(): HookPay
     {
         $hook = new HookPay();
-        $hook->siteId     = $this->configParams['site_id'];
-        $hook->secretKey  = $this->configParams['secret_key'];
-        $hook->webhookUrl = $this->configParams['webhook_url'];
-        $hook->hook();
+        $siteId     = $this->configParams['site_id'];
+        $secretKey  = $this->configParams['secret_key'];
+        $webhookUrl = $this->configParams['webhook_url'];
+        $hook->hook($siteId, $secretKey, $webhookUrl);
         return $hook;
     }
 
@@ -368,9 +368,9 @@ class Library
      * @param PSResponse|null $psResponse
      * @return mixed
      */
-    protected function request(string $method, array $postData = [], string $request_method = 'POST', ?PSResponse $psResponse = null): PSResponse
+    protected function request(string $method, array $postData = [], string $requestMethod = 'POST', ?PSResponse $psResponse = null): PSResponse
     {
-        $response = $this->sendRequest($method, $postData, $request_method);
+        $response = $this->sendRequest($method, $postData, $requestMethod);
 
         $psResponse = $psResponse ?? new PSResponse();
         return $psResponse->fillByResponse($response);
@@ -382,10 +382,10 @@ class Library
      * @return ResponseInterface
      * @throws GuzzleException
      */
-    public function sendRequest(string $method, array $postData = [], string $request_method): ResponseInterface
+    public function sendRequest(string $method, array $postData = [], string $requestMethod): ResponseInterface
     {
         $uid = $this->getIdempotenceKey();
-        $msg = $request_method . PHP_EOL .
+        $msg = $requestMethod . PHP_EOL .
             '/' . $method . PHP_EOL .
             $this->siteId . PHP_EOL .
             $uid . PHP_EOL .
@@ -399,9 +399,9 @@ class Library
         $options = ['json' => $postData];
         $options['headers'] = $headers;
 
-        if ( 'POST' === $request_method ) {
+        if ( 'POST' === $requestMethod ) {
             return $this->client->post($method, $options);
-        } elseif ( 'GET' === $request_method ) {
+        } elseif ( 'GET' === $requestMethod ) {
             return $this->client->get($method, $options);
         }
         

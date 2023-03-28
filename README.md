@@ -777,9 +777,7 @@ var_dump($response);
 ```php
 try {
     $response = $apiClient->cancelRecurring([
-        'RebillId' => 'GE00000001173680',
-        'RecurringId' => '1173',
-        'AccountId' => 'order63',
+        'RecurringId' => '1173'
     ]);
 } catch (\Exception $e) {
     $response = $e->getMessage();
@@ -791,11 +789,16 @@ var_dump($response);
 ## Работа с webhooks <a name="webhooks"></a>
 
 [Webhook в документации](https://api.payselection.com/#operation/Webhooks)
+[Webhook для подписок в документации](https://api.payselection.com/#tag/webhooks-dlya-podpisok)
 
 ```php
-$result = $apiClient->hookPay();
+try {
+    $result = $apiClient->hookPay();
+} catch (\Exception $e) {
+    $response = $e->getMessage();
+}
 
-echo $result->event;
+var_dump($result);
 ```
 
 ## License

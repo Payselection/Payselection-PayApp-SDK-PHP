@@ -1,8 +1,8 @@
 <?php
 
-namespace PaySelection\Response\Helpers;
+namespace PaySelection\Model\Transaction;
 
-class ErrorResponse
+class TransactionStateDetails
 {
     public ?string $code        = null;
     public ?string $description = null;

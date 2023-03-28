@@ -1,6 +1,6 @@
 <?php
 
-namespace PaySelection\Response\Helpers;
+namespace PaySelection\Model\Transaction;
 
 class StateDetails
 {

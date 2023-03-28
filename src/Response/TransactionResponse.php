@@ -2,7 +2,7 @@
 
 namespace PaySelection\Response;
 
-use PaySelection\Response\Helpers\StateDetails;
+use PaySelection\Model\Transaction\StateDetails;
 use PaySelection\Response\PSResponse;
 
 class TransactionResponse extends PSResponse
