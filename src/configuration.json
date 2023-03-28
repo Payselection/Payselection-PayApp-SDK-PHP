@@ -3,5 +3,6 @@
   "api_url" : "https://gw.payselection.com",
   "site_id" : "1",
   "secret_key" : "###########",
-  "webhook_url" : "https://webhook.site/notification/"
+  "webhook_url" : "https://webhook.site/notification/",
+  "recurring_webhook_url" : "https://webhook.site/notification/"
 }

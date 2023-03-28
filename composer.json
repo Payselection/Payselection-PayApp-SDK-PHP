@@ -3,7 +3,6 @@
     "description": "Payselection api client",
     "type": "library",
     "license": "MIT",
-    "version": "2.0.0",
     "authors": [
         {
             "name": "Vadim Beletsky",

@@ -14,7 +14,7 @@ class OrderResponse extends PSResponse
 
     public function fillByResponse(ResponseInterface $response): self
     {
-        $responseContent = json_decode($response->getBody());
+        $responseContent = json_decode($response->getBody(), true);
         if ($responseContent && is_array($responseContent)) {
             $this->transactionsCount = count($responseContent);
             foreach ($responseContent as $item) {
