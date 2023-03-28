@@ -6,7 +6,7 @@ use PaySelection\BaseHook;
 use PaySelection\Model\ReceiptData;
 use PaySelection\Model\RecurrentDetails;
 
-class WebHook extends BaseHook
+class HookPay extends BaseHook
 {
     public ?string $event                 = null;
     public ?string $transactionId         = null;

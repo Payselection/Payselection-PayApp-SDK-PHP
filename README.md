@@ -793,7 +793,7 @@ var_dump($response);
 
 ```php
 try {
-    $result = $apiClient->webHook();
+    $result = $apiClient->hookPay();
 } catch (\Exception $e) {
     $response = $e->getMessage();
 }
