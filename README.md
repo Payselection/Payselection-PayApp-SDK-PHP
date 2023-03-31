@@ -461,7 +461,7 @@ var_dump($response);
 
 ```php
 try {
-    $response = $apiClient->сonfirmPayment([
+    $response = $apiClient->confirmPayment([
         'TransactionId' => 'PS00000000000001',
         'OrderId' => 'a3a393d8-ac47-11ed-afa1-0242ac120002',
         'PaRes' => '123',
