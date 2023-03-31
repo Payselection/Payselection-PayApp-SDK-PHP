@@ -17,10 +17,8 @@ class StatusRequest extends BaseRequest
      */
     public function makeRequest(): array
     {
-        $req = [
+        return [
             'id' => $this->id
         ];
-
-        return $req;
     }
 }

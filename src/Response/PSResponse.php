@@ -14,7 +14,8 @@ class PSResponse extends BaseRequest
         return $this;
     }
 
-    public function get_helper_object() {
+    public function get_helper_object()
+    {
         return false;
     }
 
