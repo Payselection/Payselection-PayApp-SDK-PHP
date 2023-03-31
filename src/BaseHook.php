@@ -18,13 +18,13 @@ class BaseHook
     public function hook(string $siteId, string $secretKey, string $webhookUrl)
     {
         $request = file_get_contents('php://input');
-        $headers = getallheaders();
+        $headers = array_change_key_case(getallheaders());
 
         if (empty($request)) throw new BadTypeException('Request not found');
-        if (empty($headers['X-Site-Id'])) throw new BadTypeException('X-Site-Id not found');
-        $x_siteId = $headers['X-Site-Id'];
+        if (empty($headers['x-site-id'])) throw new BadTypeException('X-Site-Id not found');
+        $x_siteId = $headers['x-site-id'];
         if ($siteId !== $x_siteId) throw new BadTypeException(sprintf('X-Site-Id[%s] not math with siteId[%s]', $x_siteId, $siteId));
-        if (empty($headers['X-Webhook-Signature'])) throw new BadTypeException('Signature not found');
+        if (empty($headers['x-webhook-signature'])) throw new BadTypeException('Signature not found');
 
         // Check signature
         $signBody = 'POST' . PHP_EOL .
@@ -32,7 +32,7 @@ class BaseHook
             $siteId . PHP_EOL .
             $request;
 
-        if ($headers['X-Webhook-Signature'] !== self::getSignature($signBody, $secretKey))
+        if ($headers['x-webhook-signature'] !== self::getSignature($signBody, $secretKey))
             throw new BadTypeException('Signature error');
 
         $request = json_decode($request, true);
