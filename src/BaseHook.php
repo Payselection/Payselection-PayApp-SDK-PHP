@@ -19,13 +19,12 @@ class BaseHook
     {
         $request = file_get_contents('php://input');
         $headers = getallheaders();
-        if (
-            empty($request) ||
-            empty($headers['X-Site-Id']) ||
-            $siteId != $headers['X-Site-Id'] ||
-            empty($headers['X-Webhook-Signature'])
-        )
-            throw new BadTypeException('Not found');
+
+        if (empty($request)) throw new BadTypeException('Request not found');
+        if (empty($headers['X-Site-Id'])) throw new BadTypeException('X-Site-Id not found');
+        $x_siteId = $headers['X-Site-Id'];
+        if ($siteId !== $x_siteId) throw new BadTypeException(sprintf('X-Site-Id[%s] not math with siteId[%s]', $x_siteId, $siteId));
+        if (empty($headers['X-Webhook-Signature'])) throw new BadTypeException('Signature not found');
 
         // Check signature
         $signBody = 'POST' . PHP_EOL .
