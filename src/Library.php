@@ -89,7 +89,7 @@ class Library
         $webPaymentData->receiptInfo  = $receiptInfo;
 
         return $this->request($method, $webPaymentData->makeRequest(), 'POST', new WebPayResponse());
-    } 
+    }
 
     /**
      * https://api.payselection.com/#operation/Create
@@ -110,7 +110,7 @@ class Library
 
     /**
      * https://api.payselection.com/#operation/Pay
-     * Одностадийная операция оплаты – денежные средства списываются сразу после ее проведения. 
+     * Одностадийная операция оплаты – денежные средства списываются сразу после ее проведения.
      * @param array $request
      * @return PayResponse
      * @throws GuzzleException
@@ -161,13 +161,13 @@ class Library
 
     /**
      * https://api.payselection.com/#operation/Сonfirm
-     * Используется для операций Pay или Block с 3DS после получения результатов аутентификации от банка 
+     * Используется для операций Pay или Block с 3DS после получения результатов аутентификации от банка
      * для завершения одностадийной/двухстадийной операции оплаты.
      * @param array $request
      * @return ConfirmResponse
      * @throws GuzzleException
      */
-    public function сonfirmPayment(array $request): ConfirmResponse
+    public function confirmPayment(array $request): ConfirmResponse
     {
         $method = PSMethodsEnum::PAYMENTS_CONFIRM;
         $this->createClient($method);
@@ -231,7 +231,7 @@ class Library
     /**
      * https://api.payselection.com/#operation/Unsubscribe
      * Отмена рекуррентных платежей.
-     * При использовании данного метода произойдет отписка 
+     * При использовании данного метода произойдет отписка
      * по всем зарегистрированным регулярным оплатам в рамках переданного RebillId
      * @param array $request
      * @return UnsubscribeResponse
@@ -283,7 +283,7 @@ class Library
 
     /**
      * https://api.payselection.com/#operation/Payout
-     * Credit transaction - это тип транзакции, когда денежные средства переводятся на счет держателя карты. 
+     * Credit transaction - это тип транзакции, когда денежные средства переводятся на счет держателя карты.
      * Денежные средства зачисляются на карту в течение двух банковских дней.
      * @param array $request
      * @return PayResponse
@@ -302,7 +302,7 @@ class Library
     /**
      * https://api.payselection.com/#operation/transactions/{transactionId}:
      * Получить статус по TransactionId.
-     * @param array $request
+     * @param string $id
      * @return TransactionResponse
      * @throws GuzzleException
      */
@@ -319,7 +319,7 @@ class Library
     /**
      * https://api.payselection.com/#operation//orders/{OrderId}:
      * Получить статус по OrderId.
-     * @param array $request
+     * @param string $id
      * @return OrderResponse
      * @throws GuzzleException
      */
@@ -336,7 +336,6 @@ class Library
     /**
      * https://api.payselection.com/#operation/Balance
      * Операция проверки доступного баланса для Payout.
-     * @param array $request
      * @return BalanceResponse
      * @throws GuzzleException
      */
@@ -362,15 +361,16 @@ class Library
     }
 
     /**
-     * Базовый запрос
      * @param string $method
      * @param array $postData
+     * @param string $requestMethod
      * @param PSResponse|null $psResponse
-     * @return mixed
+     * @return PSResponse
+     * @throws GuzzleException
      */
     protected function request(string $method, array $postData = [], string $requestMethod = 'POST', ?PSResponse $psResponse = null): PSResponse
     {
-        $response = $this->sendRequest($method, $postData, $requestMethod);
+        $response = $this->sendRequest($method, $requestMethod, $postData);
 
         $psResponse = $psResponse ?? new PSResponse();
         return $psResponse->fillByResponse($response);
@@ -378,11 +378,12 @@ class Library
 
     /**
      * @param string $method
+     * @param string $requestMethod
      * @param array $postData
      * @return ResponseInterface
      * @throws GuzzleException
      */
-    public function sendRequest(string $method, array $postData = [], string $requestMethod): ResponseInterface
+    public function sendRequest(string $method, string $requestMethod, array $postData = []): ResponseInterface
     {
         $uid = $this->getIdempotenceKey();
         $msg = $requestMethod . PHP_EOL .
@@ -399,12 +400,11 @@ class Library
         $options = ['json' => $postData];
         $options['headers'] = $headers;
 
-        if ( 'POST' === $requestMethod ) {
-            return $this->client->post($method, $options);
-        } elseif ( 'GET' === $requestMethod ) {
+        if ( 'GET' === $requestMethod ) {
             return $this->client->get($method, $options);
+        } else {
+            return $this->client->post($method, $options);
         }
-        
     }
 
     /**

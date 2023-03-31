@@ -2,7 +2,6 @@
 
 namespace PaySelection\Response;
 
-use PaySelection\Response\Helpers\StateDetails;
 use PaySelection\Response\PSResponse;
 use PaySelection\Response\TransactionResponse;
 use Psr\Http\Message\ResponseInterface;
