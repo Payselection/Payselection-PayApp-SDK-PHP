@@ -4,9 +4,12 @@ namespace PaySelection;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\HandlerStack;
 use PaySelection\Enum\PaymentType;
 use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Exceptions\BadTypeException;
+use PaySelection\Exceptions\PSResponseException;
 use PaySelection\Hook\HookPay;
 use PaySelection\Request\ExtendedRequest;
 use PaySelection\Request\StatusRequest;
@@ -24,6 +27,7 @@ use PaySelection\Response\RefundResponse;
 use PaySelection\Response\TransactionResponse;
 use PaySelection\Response\UnsubscribeResponse;
 use PaySelection\Response\WebPayResponse;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Library
@@ -401,9 +405,9 @@ class Library
         $options['headers'] = $headers;
 
         if ( 'GET' === $requestMethod ) {
-            return $this->client->get($method, $options);
+            return $this->client->get($method, $options, ['http_errors' => false]);
         } else {
-            return $this->client->post($method, $options);
+            return $this->client->post($method, $options, ['http_errors' => false]);
         }
     }
 
@@ -464,10 +468,65 @@ class Library
             $url = $this->apiUrl;
         }
 
+        $stack = HandlerStack::create();
+        $stack->push($this->httpErrorHandler());
+
         $this->client = new Client([
             'headers'  => ['X-Site-ID' => $this->siteId],
             'base_uri' => $url,
-            'expect'   => false
+            'expect'   => false,
+            'handler' => $stack
         ]);
     }
+
+    function httpErrorHandler()
+    {
+        return function (callable $handler) {
+            return function (
+                $request,
+                array $options
+            ) use ($handler) {
+                return $handler($request, $options)->then(
+                    function (ResponseInterface $response) use ($request) {
+                        if (!$response) {
+                            $message = 'Error completing request';
+                            throw new RequestException($message, $request, null, null, []);
+                        }
+
+                        $body = [];
+                        $message = '';
+
+                        $code = $response->getStatusCode();
+                        if ($code < 400) {
+                            return $response;
+                        }
+
+                        $level = (int) \floor($code / 100);
+                        if ($level === 4) {
+                            $message = 'Client error.';
+                        } elseif ($level === 5) {
+                            $message = 'Server error.';
+                        } else {
+                            $message = 'Unsuccessful request.';
+                        }
+
+                        $body = json_decode((string) $response->getBody(), true);
+
+                        if (!json_last_error()) {
+                            if ($body['Code']) {
+                                $message .= sprintf(' Code error: %s.', $body['Code']);
+                            }
+    
+                            if ($body['Description']) {
+                                $message .= sprintf(' Description error: %s.', $body['Description']);
+                            }
+                        }
+
+                        throw new PSResponseException($message, $request, $response, null, []);
+                    }
+                );
+            };
+        };
+    }
+
 }
