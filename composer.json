@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=7.4",
-        "guzzlehttp/guzzle": "7.5.0",
+        "guzzlehttp/guzzle": "7.5.1",
         "myclabs/php-enum": "1.6",
         "ext-json": "*"
     },
