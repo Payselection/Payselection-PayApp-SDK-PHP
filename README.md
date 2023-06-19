@@ -27,7 +27,7 @@
 Установить библиотеку можно с помощью composer:
 
 ```
-composer require payselection/payselection-php-sdk
+composer require payselection/payselection-php-client
 ```
 
 ## Начало работы <a name="начало-работы"></a>
