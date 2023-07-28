@@ -120,7 +120,7 @@ try {
         ],
         'CustomerInfo' => [
             'ZIP' => '222410',
-            'Language' => 'RU'
+            'Language' => 'ru'
         ],
         'RecurringData' => [
             'Amount' => '100.00',
