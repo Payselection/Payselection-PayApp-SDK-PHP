@@ -31,7 +31,7 @@ class WebPayment extends BaseRequest
     public function makeRequest(): array
     {
         $cf = [
-            'Language' => 'RU',
+            'Language' => 'ru',
         ];
         $customerInfo = array_merge($cf, $this->customerInfo);
 
