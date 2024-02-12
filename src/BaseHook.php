@@ -35,9 +35,11 @@ class BaseHook
         if ($headers['x-webhook-signature'] !== self::getSignature($signBody, $secretKey))
             throw new BadTypeException('Signature error');
 
+        $request = stripcslashes($request);
         $request = json_decode($request, true);
-        if (!$request)
-            throw new BadTypeException('Can\'t decode JSON');
+        if ($request === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new BadTypeException('Can\'t decode JSON: ' . json_last_error_msg());
+        }
 
         $this->fill($request);
     }
@@ -64,7 +66,9 @@ class BaseHook
             if (isset($request[$requestKey])) { 
                 $value = $request[$requestKey];
                 if (!is_array($value)) {
-                    $this->$key = $request[$requestKey];
+                    if (property_exists($this, $key)) {
+                        $this->$key = $request[$requestKey];
+                    }
                 } else {
                     if ('Recurrent' === $requestKey) {
                         $this->$key = new RecurrentDetails();
