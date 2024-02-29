@@ -5,6 +5,7 @@ namespace PaySelection;
 use PaySelection\Exceptions\BadTypeException;
 use PaySelection\Model\ReceiptData;
 use PaySelection\Model\RecurrentDetails;
+use PaySelection\Model\Transaction\TransactionStateDetails;
 
 /**
  *
@@ -61,41 +62,60 @@ class BaseHook
     public function fill(array $request)
     {
         $modelFields = get_object_vars($this);
+
         foreach ($modelFields as $key => $field) {
             $requestKey = ucfirst($key);
-            if (isset($request[$requestKey])) { 
-                $value = $request[$requestKey];
-                if (!is_array($value)) {
-                    if (property_exists($this, $key)) {
-                        $this->$key = $request[$requestKey];
-                    }
-                } else {
-                    if ('Recurrent' === $requestKey) {
-                        $this->$key = new RecurrentDetails();
-                        $modelInnerFields = get_object_vars($this->$key);
-                        foreach ($modelInnerFields as $keyInner => $fieldInner) {
-                            $responseInnerKey = ucfirst($keyInner);
-                            if (isset($value[$responseInnerKey])) {
-                                $valueInner = $value[$responseInnerKey];
-                                $this->{$key}->{$keyInner} = $valueInner;
-                            }
-                        }
-                    }
-                    if ('ReceiptData' === $requestKey) {
-                        $this->$key = new ReceiptData();
-                        $modelInnerFields = get_object_vars($this->$key);
-                        foreach ($modelInnerFields as $keyInner => $fieldInner) {
-                            $responseInnerKey = $keyInner;
-                            if (isset($value[$keyInner])) {
-                                $valueInner = $value[$keyInner];
-                                $this->{$key}->{$keyInner} = $valueInner;
-                            }
-                        }
-                    }
-                }
-                
+
+            if (!isset($request[$requestKey])) {
+                continue;
+            }
+
+            $value = $request[$requestKey];
+
+            if (is_array($value)) {
+                $this->handleArrayValue($key, $value);
+                continue;
+            }
+
+            if (property_exists($this, $key)) {
+                $this->$key = $value;
             }
         }
+    }
+
+    protected function handleArrayValue($key, $value)
+    {
+        if ($key === 'recurrent') {
+            $this->$key = $this->assignObjectFromArray(new RecurrentDetails(), $value);
+        } elseif ($key === 'receiptData') {
+            $this->$key = $this->assignObjectFromArray(new ReceiptData(), $value);
+        }
+    }
+
+    protected function assignObjectFromArray($object, array $data)
+    {
+        $modelInnerFields = get_object_vars($object);
+
+        foreach ($modelInnerFields as $keyInner => $fieldInner) {
+            $responseInnerKey = ucfirst($keyInner);
+
+            if (!isset($data[$responseInnerKey])) {
+                continue;
+            }
+
+            $valueInner = $data[$responseInnerKey];
+
+            if (!is_array($valueInner)) {
+                $object->$keyInner = $valueInner;
+                continue;
+            }
+
+            if ('TransactionStateDetails' === $responseInnerKey) {
+                $object->$keyInner = $this->assignObjectFromArray(new TransactionStateDetails(), $valueInner);
+            }
+        }
+
+        return $object;
     }
 }
 
