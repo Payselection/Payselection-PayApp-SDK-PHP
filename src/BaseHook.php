@@ -36,13 +36,16 @@ class BaseHook
         if ($headers['x-webhook-signature'] !== self::getSignature($signBody, $secretKey))
             throw new BadTypeException('Signature error');
 
-        $request = stripcslashes($request);
-        $request = json_decode($request, true);
-        if ($request === null && json_last_error() !== JSON_ERROR_NONE) {
-            throw new BadTypeException('Can\'t decode JSON: ' . json_last_error_msg());
+        $request_enc = json_decode($request, true);
+        if ($request_enc === null && json_last_error() !== JSON_ERROR_NONE) {
+            $request = stripcslashes($request);
+            $request_enc = json_decode($request, true);
+            if ($request_enc === null && json_last_error() !== JSON_ERROR_NONE) {
+                throw new BadTypeException('Can\'t decode JSON: ' . json_last_error_msg());
+            }
         }
 
-        $this->fill($request);
+        $this->fill($request_enc);
     }
 
     /**
