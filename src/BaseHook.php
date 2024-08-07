@@ -36,6 +36,15 @@ class BaseHook
         if ($headers['x-webhook-signature'] !== self::getSignature($signBody, $secretKey))
             throw new BadTypeException('Signature error');
 
+        // Replace escaped sequences with proper UTF-8 characters
+        $request = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($matches) {
+            return mb_convert_encoding(pack('H*', $matches[1]), 'UTF-8', 'UCS-2BE');
+        }, $request);
+
+        $request = preg_replace_callback('/\\\\x([0-9a-fA-F]{2})/', function ($matches) {
+            return chr(hexdec($matches[1]));
+        }, $request);
+
         $request_enc = json_decode($request, true);
         if ($request_enc === null && json_last_error() !== JSON_ERROR_NONE) {
             $request = stripcslashes($request);
