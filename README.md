@@ -188,8 +188,335 @@ try {
 var_dump($response);
 ```
 
+### Paylink Create <a name="create-paylink"></a>
+
+[Paylink Create в документации](https://api.payselection.com/#operation/Paylink%20Create)
+
+Метод позволяет создать ссылку для перехода на платежный виджет.
+
+```php
+try {
+    $response = $apiClient->createPaylink([
+        'MetaData' => [
+            'PaymentType' => 'Pay',
+            'TypeLink' => 'Reusable',
+            'PreviewForm' => true,
+            'SendSMS' => true,
+            'OfferUrl' => 'string',
+            'SendBill' => true
+        ],
+        'PaymentRequest' => [
+            'OrderId' => 'string',
+            'Amount' => '123.45',
+            'Currency' => 'RUB',
+            'Description' => 'string',
+            'RebillFlag' => false,
+            'ExtraData' => [
+                'ReturnUrl' => 'https://api.payselection.com/',
+                'SuccessUrl' => 'string',
+                'DeclineUrl' => 'string',
+                'WebhookUrl' => 'https://webhook.site/94a06b69',
+                'ShortDescription' => 'string',
+                'DynamicAmount' => true
+            ]
+        ],
+        'ReceiptData' => [
+            'timestamp' => 'string',
+            'external_id' => 'string',
+            'receipt' => [
+                'client' => [
+                    'name' => 'string',
+                    'inn' => 'string',
+                    'email' => 'string',
+                    'phone' => 'string'
+                ],
+                'company' => [
+                    'email' => 'string',
+                    'sno' => 'osn',
+                    'inn' => 'string',
+                    'payment_address' => 'string'
+                ],
+                'agent_info' => [
+                    'type' => 'bank_paying_agent',
+                    'paying_agent' => [
+                        'operation' => 'string',
+                        'phones' => [
+                            'string'
+                        ]
+                    ],
+                    'receive_payments_operator' => [
+                        'phones' => [
+                            'string'
+                        ]
+                    ],
+                    'money_transfer_operator' => [
+                        'phones' => [
+                            'string'
+                        ],
+                        'name' => 'string',
+                        'address' => 'string',
+                        'inn' => 'string'
+                    ]
+                ],
+                'supplier_info' => [
+                    'phones' => [
+                        'string'
+                    ]
+                ],
+                'items' => [
+                    [
+                        'name' => 'string',
+                        'price' => 42949673,
+                        'quantity' => 99999.999,
+                        'sum' => 42949672.95,
+                        'measurement_unit' => 'string',
+                        'payment_method' => 'full_prepayment',
+                        'payment_object' => 'commodity',
+                        'nomenclature_code' => 'string',
+                        'vat' => [
+                            'type' => 'none',
+                            'sum' => 99999999.99
+                        ],
+                        'agent_info' => [
+                            'type' => 'bank_paying_agent',
+                            'paying_agent' => [
+                                'operation' => 'string',
+                                'phones' => [
+                                    'string'
+                                ]
+                            ],
+                            'receive_payments_operator' => [
+                                'phones' => [
+                                    'string'
+                                ]
+                            ],
+                            'money_transfer_operator' => [
+                                'phones' => [
+                                    'string'
+                                ],
+                                'name' => 'string',
+                                'address' => 'string',
+                                'inn' => 'string'
+                            ]
+                        ],
+                        'supplier_info' => [
+                            'phones' => [
+                                'string'
+                            ],
+                            'name' => 'string',
+                            'inn' => 'string'
+                        ],
+                        'user_data' => 'string',
+                        'excise' => 0,
+                        'country_code' => 'str',
+                        'declaration_number' => 'string'
+                    ]
+                ],
+                'payments' => [
+                    [
+                        'type' => 0,
+                        'sum' => 99999999.99
+                    ]
+                ],
+                'vats' => [
+                    [
+                        'type' => 'none',
+                        'sum' => 99999999.99
+                    ]
+                ],
+                'total' => 99999999.99,
+                'additional_check_props' => 'string',
+                'cashier' => 'string',
+                'additional_user_props' => [
+                    'name' => 'string',
+                    'value' => 'string'
+                ]
+            ]
+        ],
+        'CustomerInfo' => [
+            'Email' => 'user@example.com',
+            'ReceiptEmail' => 'user@example.com',
+            'Phone' => '+79999999999',
+            'Language' => 'en',
+            'Address' => 'string',
+            'Town' => 'string',
+            'ZIP' => 'string',
+            'Country' => 'RUS',
+            'UserId' => 'string'
+        ],
+        'RecurringData' => [
+            'Amount' => '123.45',
+            'Currency' => 'RUB',
+            'Description' => 'string',
+            'WebhookUrl' => 'https://webhook.site/94a06b69',
+            'AccountId' => 'order63',
+            'Email' => 'user@example.com',
+            'StartDate' => '2023-01-11T13:38+0000',
+            'Interval' => '5',
+            'Period' => 'day',
+            'MaxPeriods' => '3',
+            'ReceiptData' => [
+                'timestamp' => 'string',
+                'external_id' => 'string',
+                'receipt' => [
+                    'client' => [
+                        'name' => 'string',
+                        'inn' => 'string',
+                        'email' => 'string',
+                        'phone' => 'string'
+                    ],
+                    'company' => [
+                        'email' => 'string',
+                        'sno' => 'osn',
+                        'inn' => 'string',
+                        'payment_address' => 'string'
+                    ],
+                    'agent_info' => [
+                        'type' => 'bank_paying_agent',
+                        'paying_agent' => [
+                            'operation' => 'string',
+                            'phones' => [
+                                'string'
+                            ]
+                        ],
+                        'receive_payments_operator' => [
+                            'phones' => [
+                                'string'
+                            ]
+                        ],
+                        'money_transfer_operator' => [
+                            'phones' => [
+                                'string'
+                            ],
+                            'name' => 'string',
+                            'address' => 'string',
+                            'inn' => 'string'
+                        ]
+                    ],
+                    'supplier_info' => [
+                        'phones' => [
+                            'string'
+                        ]
+                    ],
+                    'items' => [
+                        [
+                            'name' => 'string',
+                            'price' => 42949673,
+                            'quantity' => 99999.999,
+                            'sum' => 42949672.95,
+                            'measurement_unit' => 'string',
+                            'payment_method' => 'full_prepayment',
+                            'payment_object' => 'commodity',
+                            'nomenclature_code' => 'string',
+                            'vat' => [
+                                'type' => 'none',
+                                'sum' => 99999999.99
+                            ],
+                            'agent_info' => [
+                                'type' => 'bank_paying_agent',
+                                'paying_agent' => [
+                                    'operation' => 'string',
+                                    'phones' => [
+                                        'string'
+                                    ]
+                                ],
+                                'receive_payments_operator' => [
+                                    'phones' => [
+                                        'string'
+                                    ]
+                                ],
+                                'money_transfer_operator' => [
+                                    'phones' => [
+                                        'string'
+                                    ],
+                                    'name' => 'string',
+                                    'address' => 'string',
+                                    'inn' => 'string'
+                                ]
+                            ],
+                            'supplier_info' => [
+                                'phones' => [
+                                    'string'
+                                ],
+                                'name' => 'string',
+                                'inn' => 'string'
+                            ],
+                            'user_data' => 'string',
+                            'excise' => 0,
+                            'country_code' => 'str',
+                            'declaration_number' => 'string'
+                        ]
+                    ],
+                    'payments' => [
+                        [
+                            'type' => 0,
+                            'sum' => 99999999.99
+                        ]
+                    ],
+                    'vats' => [
+                        [
+                            'type' => 'none',
+                            'sum' => 99999999.99
+                        ]
+                    ],
+                    'total' => 99999999.99,
+                    'additional_check_props' => 'string',
+                    'cashier' => 'string',
+                    'additional_user_props' => [
+                        'name' => 'string',
+                        'value' => 'string'
+                    ]
+                ]
+            ]
+        ],
+        'ExtendedData' => [
+            'FIO' => [
+                'enabled' => true,
+                'required' => true
+            ],
+            'Phone' => [
+                'enabled' => true,
+                'required' => true
+            ],
+            'Email' => [
+                'enabled' => true,
+                'required' => true
+            ],
+            'TokenLifeTime' => 10,
+            'Custom' => [
+                'enabled' => true,
+                'required' => true,
+                'name' => 'string'
+            ]
+        ]
+    ]);
+} catch (\Exception $e) {
+    $response = $e->getMessage();
+}
+
+var_dump($response);
+```
+
+### Paylink Void <a name="void-paylink"></a>
+
+[Paylink Void в документации](https://api.payselection.com/#operation/Paylink%20Void)
+
+Метод позволяет отменить ссылку на платежный виджет.
+
+```php
+try {
+    $response = $apiClient->createPaylinkVoid([
+        'Id' => 'string'
+    ]);
+} catch (\Exception $e) {
+    $response = $e->getMessage();
+}
+
+var_dump($response);
+```
+
 ### Get Order Status <a name="get-order-status"></a>
-[Статус ордера в документации](https://api.payselection.com/#operation//orders/{OrderId}:)
+[Статус ордера в документации](https://api.payselection.com/#operation/OrderId)
 
 Получить статус ордера по OrderId.
 
@@ -203,15 +530,76 @@ try {
 var_dump($response);
 ```
 
+### Get Order Status (extended) <a name="get-order-status-extended"></a>
+[Статус ордера в документации](https://api.payselection.com/#operation/OrderId%20(extended))
+
+Расширенный запрос используется для получения информации о текущем статусе по идентификатору заказа orderId.
+
+```php
+try {
+    $response = $apiClient->getOrderStatusExt('a3a393d8-ac47-11ed-afa1-0242ac120002');
+} catch (\Exception $e) {
+    $response = $e->getMessage();
+}
+
+var_dump($response);
+```
+
 ### Get transaction Status <a name="get-transaction-status"></a>
 
-[Статус транзакции в документации](https://api.payselection.com/#operation//transactions/{transactionId}:)
+[Статус транзакции в документации](https://api.payselection.com/#operation/TransactionId)
 
 Получить статус по TransactionId.
 
 ```php
 try {
     $response = $apiClient->getTransactionStatus('PS00000000000001');
+} catch (\Exception $e) {
+    $response = $e->getMessage();
+}
+
+var_dump($response);
+```
+
+### Get transaction Status (extended) <a name="get-transaction-status-extended"></a>
+
+[Статус транзакции в документации](https://api.payselection.com/#operation/TransactionId%20(extended))
+
+Расширенный запрос используется для получения информации о текущем статусе по идентификатору транзакции TransactionId.
+
+```php
+try {
+    $response = $apiClient->getTransactionStatusExt('PS00000000000001');
+} catch (\Exception $e) {
+    $response = $e->getMessage();
+}
+
+var_dump($response);
+```
+
+### Get transaction Status (by-dates) <a name="get-transaction-status-by-dates"></a>
+
+[Статус транзакции в документации](https://api.payselection.com/#operation/Transactions%20(by-dates))
+
+Расширенный запрос используется для получения статуса транзакций по выбранному диапазону дат.
+
+```php
+try {
+    $response = $apiClient->getTransactionStatusByDates([
+        'StartCreationDate' => '2022-12-31T00:00:00',
+        'EndCreationDate' => '2023-12-31T00:00:00',
+        'PageNumber' => 1,
+        'TimeZone' => 'Africa/Abidjan',
+        'Statuses' => [
+            'success',
+            'voided',
+            'preauthorized',
+            'pending',
+            'declined',
+            'wait_for_3ds',
+            'redirect'
+        ]
+    ]);
 } catch (\Exception $e) {
     $response = $e->getMessage();
 }
@@ -592,7 +980,7 @@ var_dump($response);
 ```php
 try {
     $response = $apiClient->cancelSubscription([
-        'RebillId' => 'GE00000001173680'
+        'RebillId' => 'PS00000000000001'
     ]);
 } catch (\Exception $e) {
     $response = $e->getMessage();
@@ -778,6 +1166,162 @@ var_dump($response);
 try {
     $response = $apiClient->cancelRecurring([
         'RecurringId' => '1173'
+    ]);
+} catch (\Exception $e) {
+    $response = $e->getMessage();
+}
+
+var_dump($response);
+```
+
+### Search Recurring <a name="search-recurring"></a>
+
+[Operation Recurring Search в документации](https://api.payselection.com/#operation/Recurring%20Search)
+
+Поиск регулярной оплаты (подписки) по выбранному параметру.
+
+```php
+try {
+    $response = $apiClient->searchRecurring([
+        'RebillId' => 'PS00000000000001',
+        'RecurringId' => '1173',
+        'AccountId' => 'order63',
+    ]);
+} catch (\Exception $e) {
+    $response = $e->getMessage();
+}
+
+var_dump($response);
+```
+
+### Change Recurring <a name="change-recurring"></a>
+
+[Operation Recurring Change в документации](https://api.payselection.com/#operation/Recurring%20Change)
+
+Изменение параметров регулярной оплаты (подписки).
+
+```php
+try {
+    $response = $apiClient->changeRecurring([
+        'RecurringId' => '1173',
+        'MaxPeriods' => '3',
+        'StartDate' => '2023-01-11T13:38+0000',
+        'Interval' => '5',
+        'Period' => 'day',
+        'Amount' => '123.45',
+        'ReceiptData' => [
+            'timestamp' => 'string',
+            'external_id' => 'string',
+            'receipt' => [
+                'client' => [
+                    'name' => 'string',
+                    'inn' => 'string',
+                    'email' => 'string',
+                    'phone' => 'string'
+                ],
+                'company' => [
+                    'email' => 'string',
+                    'sno' => 'osn',
+                    'inn' => 'string',
+                    'payment_address' => 'string'
+                ],
+                'agent_info' => [
+                    'type' => 'bank_paying_agent',
+                    'paying_agent' => [
+                        'operation' => 'string',
+                        'phones' => [
+                            'string'
+                        ]
+                    ],
+                    'receive_payments_operator' => [
+                        'phones' => [
+                            'string'
+                        ]
+                    ],
+                    'money_transfer_operator' => [
+                        'phones' => [
+                            'string'
+                        ],
+                        'name' => 'string',
+                        'address' => 'string',
+                        'inn' => 'string'
+                    ]
+                ],
+                'supplier_info' => [
+                    'phones' => [
+                        'string'
+                    ]
+                ],
+                'items' => [
+                    [
+                        'name' => 'string',
+                        'price' => 42949673,
+                        'quantity' => 99999.999,
+                        'sum' => 42949672.95,
+                        'measurement_unit' => 'string',
+                        'payment_method' => 'full_prepayment',
+                        'payment_object' => 'commodity',
+                        'nomenclature_code' => 'string',
+                        'vat' => [
+                            'type' => 'none',
+                            'sum' => 99999999.99
+                        ],
+                        'agent_info' => [
+                            'type' => 'bank_paying_agent',
+                            'paying_agent' => [
+                                'operation' => 'string',
+                                'phones' => [
+                                    'string'
+                                ]
+                            ],
+                            'receive_payments_operator' => [
+                                'phones' => [
+                                    'string'
+                                ]
+                            ],
+                            'money_transfer_operator' => [
+                                'phones' => [
+                                    'string'
+                                ],
+                                'name' => 'string',
+                                'address' => 'string',
+                                'inn' => 'string'
+                            ]
+                        ],
+                        'supplier_info' => [
+                            'phones' => [
+                                'string'
+                            ],
+                            'name' => 'string',
+                            'inn' => 'string'
+                        ],
+                        'user_data' => 'string',
+                        'excise' => 0,
+                        'country_code' => 'str',
+                        'declaration_number' => 'string'
+                    ]
+                ],
+                'payments' => [
+                    [
+                        'type' => 0,
+                        'sum' => 99999999.99
+                    ]
+                ],
+                'vats' => [
+                    [
+                        'type' => 'none',
+                        'sum' => 99999999.99
+                    ]
+                ],
+                'total' => 99999999.99,
+                'additional_check_props' => 'string',
+                'cashier' => 'string',
+                'additional_user_props' => [
+                    'name' => 'string',
+                    'value' => 'string'
+                ]
+            ]
+        ]
     ]);
 } catch (\Exception $e) {
     $response = $e->getMessage();

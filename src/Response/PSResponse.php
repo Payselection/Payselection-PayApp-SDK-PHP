@@ -34,6 +34,7 @@ class PSResponse extends BaseRequest
                     $modelInnerFields = get_object_vars($this->$key);
                     foreach ($modelInnerFields as $keyInner => $fieldInner) {
                         $responseInnerKey = ucfirst($keyInner);
+                        if ($keyInner === 'rrn') $responseInnerKey = 'RRN';
                         if (isset($value[$responseInnerKey])) {
                             $valueInner = $value[$responseInnerKey];
                             $this->{$key}->{$keyInner} = $valueInner;

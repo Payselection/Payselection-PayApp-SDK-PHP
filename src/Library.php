@@ -14,16 +14,22 @@ use PaySelection\Hook\HookPay;
 use PaySelection\Request\ExtendedRequest;
 use PaySelection\Request\StatusRequest;
 use PaySelection\Request\WebPayment;
+use PaySelection\Response\PaylinkResponse;
+use PaySelection\Response\PaylinkVoidResponse;
 use PaySelection\Response\BalanceResponse;
 use PaySelection\Response\CancelResponse;
 use PaySelection\Response\ChargeResponse;
 use PaySelection\Response\ConfirmResponse;
 use PaySelection\Response\OrderResponse;
+use PaySelection\Response\OrderExtResponse;
 use PaySelection\Response\PayResponse;
 use PaySelection\Response\PSResponse;
 use PaySelection\Response\RecurringCancelResponse;
+use PaySelection\Response\RecurringChangeResponse;
+use PaySelection\Response\RecurringSearchResponse;
 use PaySelection\Response\RecurringResponse;
 use PaySelection\Response\RefundResponse;
+use PaySelection\Response\TransactionExtResponse;
 use PaySelection\Response\TransactionResponse;
 use PaySelection\Response\UnsubscribeResponse;
 use PaySelection\Response\WebPayResponse;
@@ -110,6 +116,40 @@ class Library
         $data = new ExtendedRequest($request);
 
         return $this->request($method, $data->makeRequest(), 'POST', new WebPayResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Paylink%20Create
+     * Метод позволяет создать ссылку для перехода на платежный виджет.
+     * @param array $request
+     * @return PaylinkResponse
+     * @throws GuzzleException
+     */
+    public function createPaylink(array $request): PaylinkResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_PAYLINK_CREATE;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new PaylinkResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Paylink%20Void
+     * Метод позволяет отменить ссылку на платежный виджет.
+     * @param array $request
+     * @return PaylinkVoidResponse
+     * @throws GuzzleException
+     */
+    public function createPaylinkVoid(array $request): PaylinkVoidResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_PAYLINK_VOID;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new PaylinkVoidResponse());
     }
 
     /**
@@ -286,6 +326,40 @@ class Library
     }
 
     /**
+     * https://api.payselection.com/#operation/Recurring%20Change
+     * Изменение параметров регулярной оплаты.
+     * @param array $request
+     * @return RecurringChangeResponse
+     * @throws GuzzleException
+     */
+    public function changeRecurring(array $request): RecurringChangeResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_RECURRING_CHANGE;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new RecurringChangeResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Recurring%20Search
+     * Поиск регулярной оплаты (подписки) по выбранному параметру.
+     * @param array $request
+     * @return RecurringSearchResponse
+     * @throws GuzzleException
+     */
+    public function searchRecurring(array $request): RecurringSearchResponse
+    {
+        $method = PSMethodsEnum::PAYMENTS_RECURRING_SEARCH;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new RecurringSearchResponse());
+    }
+
+    /**
      * https://api.payselection.com/#operation/Payout
      * Credit transaction - это тип транзакции, когда денежные средства переводятся на счет держателя карты.
      * Денежные средства зачисляются на карту в течение двух банковских дней.
@@ -304,7 +378,7 @@ class Library
     }
 
     /**
-     * https://api.payselection.com/#operation/transactions/{transactionId}:
+     * https://api.payselection.com/#operation/TransactionId:
      * Получить статус по TransactionId.
      * @param string $id
      * @return TransactionResponse
@@ -321,7 +395,41 @@ class Library
     }
 
     /**
-     * https://api.payselection.com/#operation//orders/{OrderId}:
+     * https://api.payselection.com/#operation/TransactionId%20(extended):
+     * Расширенный запрос используется для получения информации о текущем статусе по идентификатору транзакции.
+     * @param string $id
+     * @return TransactionExtResponse
+     * @throws GuzzleException
+     */
+    public function getTransactionStatusExt(string $id): TransactionExtResponse
+    {
+        $method = PSMethodsEnum::TRANSACTION_STATUS_EXT;
+        $this->createClient($method);
+
+        $data = new StatusRequest($id);
+
+        return $this->request(sprintf($method, $data->id), $data->makeRequest(), 'GET', new TransactionExtResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/Transactions%20(by-dates):
+     * Расширенный запрос используется для получения статуса транзакций по выбранному диапазону дат.
+     * @param array $request
+     * @return OrderExtResponse
+     * @throws GuzzleException
+     */
+    public function getTransactionStatusByDates(array $request): OrderExtResponse
+    {
+        $method = PSMethodsEnum::TRANSACTIONS_BY_DATE_STATUS;
+        $this->createClient($method);
+
+        $data = new ExtendedRequest($request);
+
+        return $this->request($method, $data->makeRequest(), 'POST', new OrderExtResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/OrderId:
      * Получить статус по OrderId.
      * @param string $id
      * @return OrderResponse
@@ -335,6 +443,23 @@ class Library
         $data = new StatusRequest($id);
 
         return $this->request(sprintf($method, $data->id), $data->makeRequest(), 'GET', new OrderResponse());
+    }
+
+    /**
+     * https://api.payselection.com/#operation/OrderId%20(extended):
+     * Расширенный запрос используется для получения информации о текущем статусе по идентификатору заказа OrderId.
+     * @param string $id
+     * @return OrderExtResponse
+     * @throws GuzzleException
+     */
+    public function getOrderStatusExt(string $id): OrderExtResponse
+    {
+        $method = PSMethodsEnum::ORDER_STATUS_EXT;
+        $this->createClient($method);
+
+        $data = new StatusRequest($id);
+
+        return $this->request(sprintf($method, $data->id), $data->makeRequest(), 'GET', new OrderExtResponse());
     }
 
     /**

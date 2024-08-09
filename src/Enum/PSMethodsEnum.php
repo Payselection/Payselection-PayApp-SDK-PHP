@@ -12,6 +12,16 @@ class PSMethodsEnum extends Enum
     public const PAYMENTS_WEBPAY = 'webpayments/create';
 
     /**
+     * Paylink Create
+     */
+    public const PAYMENTS_PAYLINK_CREATE = 'webpayments/paylink_create';
+
+    /**
+     * Paylink Void
+     */
+    public const PAYMENTS_PAYLINK_VOID = 'webpayments/paylink_void';
+
+    /**
      * Operation Pay
      */
     public const PAYMENTS_PAY = 'payments/requests/single';
@@ -47,9 +57,24 @@ class PSMethodsEnum extends Enum
     public const TRANSACTION_STATUS = 'transactions/%s';
 
     /**
+     * Get transaction status (extended)
+     */
+    public const TRANSACTION_STATUS_EXT = 'transactions/%s/extended';
+
+    /**
+     * Transactions (by-dates)
+     */
+    public const TRANSACTIONS_BY_DATE_STATUS = 'transactions/by-dates';
+
+    /**
      * Get order status
      */
     public const ORDER_STATUS = 'orders/%s';
+
+    /**
+     * Get order status (extended)
+     */
+    public const ORDER_STATUS_EXT = 'orders/%s/extended';
 
     /**
      * Operation Rebill
@@ -70,6 +95,16 @@ class PSMethodsEnum extends Enum
      * Operation Recurring Unsubscribe
      */
     public const PAYMENTS_RECURRING_UNSUBSCRIBE = 'payments/recurring/unsubscribe';
+
+    /**
+     * Operation Recurring Change
+     */
+    public const PAYMENTS_RECURRING_CHANGE = 'payments/recurring/change';
+
+    /**
+     * Operation Recurring Search
+     */
+    public const PAYMENTS_RECURRING_SEARCH = 'payments/recurring/search';
 
     /**
      * Operation Balance
