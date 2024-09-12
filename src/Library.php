@@ -587,7 +587,9 @@ class Library
         $this->siteId     = $this->configParams['site_id'];
         $this->secretKey  = $this->configParams['secret_key'];
 
-        if ($method === PSMethodsEnum::PAYMENTS_WEBPAY) {
+        if ($method === PSMethodsEnum::PAYMENTS_WEBPAY
+            || PSMethodsEnum::PAYMENTS_PAYLINK_CREATE
+            || PSMethodsEnum::PAYMENTS_PAYLINK_VOID) {
             $url = $this->webpayUrl;
         } else {
             $url = $this->apiUrl;
