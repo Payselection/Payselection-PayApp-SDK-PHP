@@ -25,6 +25,7 @@ class PSResponse extends BaseRequest
 
         foreach ($modelFields as $key => $field) {
             $responseKey = ucfirst($key);
+            if ($responseKey === 'Status') $responseKey = 'status';
             if (isset($responseContent[$responseKey])) {
                 $value = $responseContent[$responseKey];
                 if (!is_array($value)) {
