@@ -588,8 +588,8 @@ class Library
         $this->secretKey  = $this->configParams['secret_key'];
 
         if ($method === PSMethodsEnum::PAYMENTS_WEBPAY
-            || PSMethodsEnum::PAYMENTS_PAYLINK_CREATE
-            || PSMethodsEnum::PAYMENTS_PAYLINK_VOID) {
+            || $method === PSMethodsEnum::PAYMENTS_PAYLINK_CREATE
+            || $method === PSMethodsEnum::PAYMENTS_PAYLINK_VOID) {
             $url = $this->webpayUrl;
         } else {
             $url = $this->apiUrl;
