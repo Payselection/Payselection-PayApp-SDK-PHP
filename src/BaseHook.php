@@ -54,10 +54,9 @@ class BaseHook
      * @return void
      * @throws BadTypeException
      */
-    public function customHook()
+    public function verifyPaymentHook()
     {
         $request = file_get_contents('php://input');
-        $request = '{"OrderId": "1299670125", "Amount": "4.50", "Description": "Description", "RebillFlag": false}';
 
         if (empty($request)) throw new BadTypeException('Request not found');
 

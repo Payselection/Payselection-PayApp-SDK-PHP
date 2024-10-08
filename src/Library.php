@@ -11,7 +11,7 @@ use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Exceptions\BadTypeException;
 use PaySelection\Exceptions\PSResponseException;
 use PaySelection\Hook\HookPay;
-use PaySelection\Hook\CustomHook;
+use PaySelection\Hook\VerifyPaymentHook;
 use PaySelection\Request\ExtendedRequest;
 use PaySelection\Request\StatusRequest;
 use PaySelection\Request\WebPayment;
@@ -493,10 +493,10 @@ class Library
     /**
      * @throws BadTypeException
      */
-    public function customHook(): CustomHook
+    public function verifyPaymentHook(): VerifyPaymentHook
     {
-        $hook = new CustomHook();
-        $hook->customHook();
+        $hook = new VerifyPaymentHook();
+        $hook->verifyPaymentHook();
         return $hook;
     }
 

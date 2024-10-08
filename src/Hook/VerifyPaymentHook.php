@@ -6,7 +6,7 @@ use PaySelection\BaseHook;
 use PaySelection\Model\ReceiptData;
 use PaySelection\Model\RecurrentDetails;
 
-class CustomHook extends BaseHook
+class VerifyPaymentHook extends BaseHook
 {
     public ?string $paymentType        = null;
     public ?string $typeLink           = null;

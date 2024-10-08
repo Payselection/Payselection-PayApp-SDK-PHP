@@ -28,6 +28,7 @@
     - [Change Recurring](#change-recurring)
     - [Cancel Recurring](#cancel-recurring)
 - [Работа с webhooks](#webhooks)
+- [Webhook для проверки платежа](#verify-payment-webhooks)
 
 ## Установка <a name="установка"></a>
 
@@ -1347,6 +1348,22 @@ try {
     $result = $apiClient->hookPay();
 } catch (\Exception $e) {
     $response = $e->getMessage();
+}
+
+var_dump($result);
+```
+
+## Работа с webhooks проверки платежа <a name="verify-payment-webhooks"></a>
+
+[Webhook для проверки платежа в документации](https://api.payselection.com/#tag/Webhook-proverki-platezha)
+
+```php
+try {
+    $result = $apiClient->verifyPaymentHook();
+    // Пример проверки суммы
+    if ($result->amount != 500) throw new Exception("Incorrect amount");
+} catch (\PaySelection\Exceptions\PSException $e) {
+    print_r($e);
 }
 
 var_dump($result);
