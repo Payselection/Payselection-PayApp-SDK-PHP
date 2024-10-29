@@ -11,6 +11,7 @@ use PaySelection\Enum\PSMethodsEnum;
 use PaySelection\Exceptions\BadTypeException;
 use PaySelection\Exceptions\PSResponseException;
 use PaySelection\Hook\HookPay;
+use PaySelection\Hook\VerifyPaymentHook;
 use PaySelection\Request\ExtendedRequest;
 use PaySelection\Request\StatusRequest;
 use PaySelection\Request\WebPayment;
@@ -486,6 +487,16 @@ class Library
         $secretKey  = $this->configParams['secret_key'];
         $webhookUrl = $this->configParams['webhook_url'];
         $hook->hook($siteId, $secretKey, $webhookUrl);
+        return $hook;
+    }
+
+    /**
+     * @throws BadTypeException
+     */
+    public function verifyPaymentHook(): VerifyPaymentHook
+    {
+        $hook = new VerifyPaymentHook();
+        $hook->verifyPaymentHook();
         return $hook;
     }
 

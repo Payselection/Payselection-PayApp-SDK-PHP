@@ -36,14 +36,7 @@ class BaseHook
         if ($headers['x-webhook-signature'] !== self::getSignature($signBody, $secretKey))
             throw new BadTypeException('Signature error');
 
-        // Replace escaped sequences with proper UTF-8 characters
-        $request = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($matches) {
-            return mb_convert_encoding(pack('H*', $matches[1]), 'UTF-8', 'UCS-2BE');
-        }, $request);
-
-        $request = preg_replace_callback('/\\\\x([0-9a-fA-F]{2})/', function ($matches) {
-            return chr(hexdec($matches[1]));
-        }, $request);
+        $request = $this->formatString($request);
 
         $request_enc = json_decode($request, true);
         if ($request_enc === null && json_last_error() !== JSON_ERROR_NONE) {
@@ -54,6 +47,29 @@ class BaseHook
             }
         }
 
+        $this->fill($request_enc);
+    }
+
+    /**
+     * @return void
+     * @throws BadTypeException
+     */
+    public function verifyPaymentHook()
+    {
+        $request = file_get_contents('php://input');
+
+        if (empty($request)) throw new BadTypeException('Request not found');
+
+        $request = $this->formatString($request);
+
+        $request_enc = json_decode($request, true);
+        if ($request_enc === null && json_last_error() !== JSON_ERROR_NONE) {
+            $request = stripcslashes($request);
+            $request_enc = json_decode($request, true);
+            if ($request_enc === null && json_last_error() !== JSON_ERROR_NONE) {
+                throw new BadTypeException('Can\'t decode JSON: ' . json_last_error_msg());
+            }
+        }
         $this->fill($request_enc);
     }
 
@@ -93,6 +109,18 @@ class BaseHook
                 $this->$key = $value;
             }
         }
+    }
+
+    public function formatString(string $request): string
+    {
+        // Replace escaped sequences with proper UTF-8 characters
+        $request = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($matches) {
+            return mb_convert_encoding(pack('H*', $matches[1]), 'UTF-8', 'UCS-2BE');
+        }, $request);
+
+        return preg_replace_callback('/\\\\x([0-9a-fA-F]{2})/', function ($matches) {
+            return chr(hexdec($matches[1]));
+        }, $request);
     }
 
     protected function handleArrayValue($key, $value)
