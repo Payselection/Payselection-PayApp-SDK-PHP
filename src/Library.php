@@ -41,6 +41,7 @@ class Library
 {
     protected string  $siteId;
     protected string  $secretKey;
+    protected string  $publicKey;
     protected string  $webpayUrl;
     protected string  $apiUrl;
     protected Client  $client;
@@ -597,11 +598,15 @@ class Library
         $this->apiUrl    = $this->configParams['api_url'];
         $this->siteId     = $this->configParams['site_id'];
         $this->secretKey  = $this->configParams['secret_key'];
+        $this->publicKey  = $this->configParams['public_key'];
 
         if ($method === PSMethodsEnum::PAYMENTS_WEBPAY
             || $method === PSMethodsEnum::PAYMENTS_PAYLINK_CREATE
             || $method === PSMethodsEnum::PAYMENTS_PAYLINK_VOID) {
             $url = $this->webpayUrl;
+            if (!empty($this->publicKey)) {
+                $this->secretKey = $this->publicKey;
+            }
         } else {
             $url = $this->apiUrl;
         }
