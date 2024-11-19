@@ -42,6 +42,7 @@ class Library
     protected string  $siteId;
     protected string  $secretKey;
     protected string  $publicKey;
+    protected string  $siteUrl;
     protected string  $webpayUrl;
     protected string  $apiUrl;
     protected Client  $client;
@@ -527,8 +528,17 @@ class Library
     public function sendRequest(string $method, string $requestMethod, array $postData = []): ResponseInterface
     {
         $uid = $this->getIdempotenceKey();
+        $p2 = '/' . $method;
+        if ($method === PSMethodsEnum::PAYMENTS_WEBPAY
+            || $method === PSMethodsEnum::PAYMENTS_PAYLINK_CREATE
+            || $method === PSMethodsEnum::PAYMENTS_PAYLINK_VOID) {
+            if (!empty($this->publicKey)) {
+                $this->secretKey = $this->publicKey;
+                $p2 = $this->siteUrl;
+            }
+        }
         $msg = $requestMethod . PHP_EOL .
-            '/' . $method . PHP_EOL .
+            $p2 . PHP_EOL .
             $this->siteId . PHP_EOL .
             $uid . PHP_EOL .
             json_encode($postData);
@@ -596,17 +606,15 @@ class Library
     {
         $this->webpayUrl = $this->configParams['webpay_url'];
         $this->apiUrl    = $this->configParams['api_url'];
-        $this->siteId     = $this->configParams['site_id'];
-        $this->secretKey  = $this->configParams['secret_key'];
+        $this->siteId    = $this->configParams['site_id'];
+        $this->secretKey = $this->configParams['secret_key'];
         $this->publicKey = $this->configParams['public_key'] ?? '';
+        $this->siteUrl   = $this->configParams['site_url'] ?? '';
 
         if ($method === PSMethodsEnum::PAYMENTS_WEBPAY
             || $method === PSMethodsEnum::PAYMENTS_PAYLINK_CREATE
             || $method === PSMethodsEnum::PAYMENTS_PAYLINK_VOID) {
             $url = $this->webpayUrl;
-            if (!empty($this->publicKey)) {
-                $this->secretKey = $this->publicKey;
-            }
         } else {
             $url = $this->apiUrl;
         }
