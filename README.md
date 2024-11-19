@@ -49,12 +49,14 @@ $apiClient->setConfiguration([
     'site_id' => '123',
     'secret_key' => '###########',
     'public_key' => '###########',
+    'site_url' => 'https://test.com'
     'webhook_url' => 'https://webhook.site/notification/'
 ]);
 ```
 
 Значение `webhook_url` должно совпадать со значением `WebhookUrl` из запросов.
-Значение `public_key` может использоваться в методах Paylink и Webpay.
+Опциональное значение `public_key` может использоваться в методах Paylink и Webpay.
+При заполнении `public_key` необходимо обязательное заполнение `site_url`(его значение уточните у своего менеджера).
 
 2. Вызовите нужный метод API. 
 
