@@ -537,11 +537,13 @@ class Library
                 $p2 = $this->siteUrl;
             }
         }
-        $msg = $requestMethod . PHP_EOL .
-            $p2 . PHP_EOL .
-            $this->siteId . PHP_EOL .
-            $uid . PHP_EOL .
-            json_encode($postData);
+        $msg = implode("\n", [
+            $requestMethod,
+            $p2,
+            $this->siteId,
+            $uid,
+            json_encode($postData)
+        ]);
 
         $headers = [
             'X-Request-ID' => $uid,
